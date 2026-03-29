@@ -1,6 +1,6 @@
 name: swift_log_transport
 description: SwiftLog (Apple swift-log) transport for revere logger (via platform channel).
-version: 0.0.1
+version: 0.0.2
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/packages/swift_log_transport
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
-  revere: ^0.0.1
+  revere: ^0.0.2
 
 dev_dependencies:
   flutter_test:
