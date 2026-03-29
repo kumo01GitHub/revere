@@ -1,13 +1,15 @@
 name: file_transport
-version: 0.0.1
-publish_to: none
 description: File and rolling file transport for revere logger.
+version: 0.0.1
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/packages/file_transport
+
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  revere:
-    path: ../core
+  revere: ^0.0.1
 
 dev_dependencies:
   flutter_test:

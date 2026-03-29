@@ -1,17 +1,18 @@
 name: android_log_transport
-version: 0.0.1
-publish_to: none
 description: Android Logcat transport for revere logger (via platform channel).
+version: 0.0.1
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/packages/android_log_transport
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  revere:
-    path: ../core
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
+  revere: ^0.0.1
 
 dev_dependencies:
   flutter_test:

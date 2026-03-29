@@ -1,7 +1,9 @@
 name: notification_transport
-description: "A new Flutter package project."
+description: "Notification transport for revere logger (via flutter_local_notifications)."
 version: 0.0.1
-homepage:
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/packages/notification_transport
 
 environment:
   sdk: ^3.11.4
@@ -11,8 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_local_notifications: ^17.0.0
-  revere:
-    path: ../core
+  revere: ^0.0.1
 
 dev_dependencies:
   flutter_test:
