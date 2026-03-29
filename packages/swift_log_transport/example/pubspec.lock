@@ -190,10 +190,10 @@ packages:
     dependency: transitive
     description:
       name: revere
-      sha256: c372324a4a2e4d9e6c60a5eaf6f29dad1312dcda42b47d19499a4bea89aa7832
+      sha256: b24b9315fb0411ab3e9e7b6a8e716c01179175b3730735ea7f3101f1346a4b1d
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -237,7 +237,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.3"
   sync_http:
     dependency: transitive
     description:
