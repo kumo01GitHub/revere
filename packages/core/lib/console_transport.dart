@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'transport.dart';
 import 'log_level.dart';
 import 'log_event.dart';
@@ -12,7 +10,9 @@ class ConsoleTransport extends Transport {
 
   /// config: {`format`: String, `colorize`: bool}
   ConsoleTransport({super.level, super.config})
-    : format = (config['format'] as String?) ?? '[{level}] {message}',
+    : format =
+          (config['format'] as String?) ??
+          '{timestamp} [{context}:{level}] {message} {error} {stackTrace}',
       colorize = (config['colorize'] as bool?) ?? true;
 
   @override
@@ -26,13 +26,8 @@ class ConsoleTransport extends Transport {
         .replaceAll('{context}', event.context ?? '');
     final colorize = config['colorize'] as bool? ?? true;
     final outputMsg = colorize ? _colorize(logMsg, event.level) : logMsg;
-    developer.log(
-      outputMsg,
-      name: event.context ?? '',
-      time: event.timestamp,
-      error: event.error,
-      stackTrace: event.stackTrace,
-    );
+    // ignore: avoid_print
+    print(outputMsg);
   }
 
   String _colorize(String msg, LogLevel level) {

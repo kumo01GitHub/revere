@@ -17,11 +17,11 @@ class DummyTransport extends Transport {
 
 class TestService with LoggerMixin {
   Future<void> doSomething() async {
-    await logInfo('Service started');
+    await i('Service started');
     try {
       throw Exception('fail');
-    } catch (e, st) {
-      await logError('Error occurred', error: e, stackTrace: st);
+    } catch (err, st) {
+      await e('Error occurred', error: err, stackTrace: st);
     }
   }
 }
