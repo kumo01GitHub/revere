@@ -29,17 +29,16 @@ class NotificationTransport extends Transport {
           linux: const LinuxNotificationDetails(),
           windows: const WindowsNotificationDetails(),
         ) {
-    _init();
-  }
-
-  Future<void> _init() async {
-    await _plugin.initialize(
+    _plugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
         macOS: DarwinInitializationSettings(),
         linux: LinuxInitializationSettings(defaultActionName: 'Open'),
-        windows: WindowsInitializationSettings(),
+        windows: WindowsInitializationSettings(
+          appName: config['winAppName'] ?? 'Revere Logs',
+          appUserModelId: config['winAppUserModelId'] ?? 'app.kumo01.revere',
+          guid: config['winGuid'] ?? ''),
       ),
     );
   }
