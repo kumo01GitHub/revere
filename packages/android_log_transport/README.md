@@ -1,55 +1,33 @@
-a specialized package that includes platform-specific implementation code for
-samples, guidance on mobile development, and a full API reference.
 # Revere Android Log Transport
 
-Transporter for outputting logs to Android Logcat from the revere logger.
-
----
-
 ## Overview
-
-- Sends logs from Dart/Flutter directly to Android logcat
-- Configurable tag and message template via config
-
----
+Outputs logs from the revere logger to Android Logcat. Useful for debugging and monitoring on Android devices.
 
 ## Usage
-
 ```dart
 import 'package:android_log_transport/android_log_transport.dart';
 import 'package:revere/core.dart';
-
 final logger = Logger();
 logger.addTransport(AndroidLogTransport(config: {
-	'tag': 'MyApp',
-	'format': '[{level}] {message}',
+  'tag': 'MyApp',
+  'format': '[{level}] {message}',
 }));
-
 await logger.info('Hello Android!');
 ```
 
----
+## Configuration
+- `tag`: Logcat tag (default: 'Revere')
+- `format`: Message format (default: '[{level}] {message}')
 
 ## App-side Setup
-
-- Add dependency in pubspec.yaml:
+Add dependency in pubspec.yaml:
 ```yaml
 dependencies:
-	android_log_transport:
-		path: ../android_log_transport
+  android_log_transport:
+    path: ../android_log_transport
 ```
 
+## Additional Information
 - No special permissions required in AndroidManifest.xml (standard logcat output)
-- Output can be viewed on real devices or emulators via logcat
-
----
-
-## Main Config Options
-
-- `tag`: logcat tag (default if omitted)
-- `format`: message template
-
----
-
-See also comments in lib/android_log_transport.dart for details.
-
+- Output can be viewed on real devices or emulators via logcat.
+- For more information, see [revere](https://github.com/kumo01GitHub/revere/).

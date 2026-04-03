@@ -1,30 +1,29 @@
-# Revere Logging Monorepo
+# Revere Logger
 
-High-performance, extensible logging infrastructure for Dart/Flutter. Supports flexible log routing by combining multiple Transporters (output backends).
+Revere is a modular logging monorepo for Dart/Flutter applications.
+It provides a core logger and multiple optional transport packages so you can route logs to different destinations with a consistent API.
 
----
+Compared to other Dart/Flutter logger options, Revere is designed for practical production use with:
 
-## Directory Structure
+- **Diverse transports**: Freely combine and extend outputs such as console, file, Firebase, Android, notifications, and Swift.
+- **Multi-platform coverage**: Keep a consistent logging model across Dart/Flutter, Android, iOS (Swift), and Firebase.
+- **Extensibility and customization**: Add custom transports and control log levels/formats per transport.
+- **Production-ready capabilities**: Use features such as file rotation, Crashlytics integration, and notification delivery.
+- **Modular package design**: Adopt only what you need to keep dependencies and binary size lean.
 
-- `packages/core` – Core logger (Logger, Console/HTTP Transporters, abstract base)
-- `packages/file_transport` – File and rolling file output
-- `packages/firebase_transport` – Firebase Analytics/Crashlytics output
-- `packages/android_log_transport` – Android Logcat output
-- `packages/swift_log_transport` – Apple swift-log output
+## Design Philosophy
 
----
+1. **Flexibility & Extensibility**
+  - Architecture allows easy addition and switching of any transport (output backend).
+  - Choose the optimal configuration for your use case.
+2. **Consistent Multi-Platform Experience**
+  - Provides a unified logging experience across Flutter apps, servers, Android/iOS native, and cloud integrations.
+3. **Production-Oriented**
+  - Focus on features truly needed in the field, such as log rotation, remote delivery, and failure notifications.
+4. **Simple API & Easy Adoption**
+  - Intuitive API design and modular structure allow you to adopt only what you need.
 
-## Key Features
-
-- Multiple Transporters per logger (e.g. file + Firebase + console)
-- Per-Transporter config (format, color, headers, etc.)
-- Log level threshold per Transporter
-- Fully asynchronous, awaitable logging
-- Easy extension via abstract base class
-
----
-
-## Usage Example
+## Quick Start
 
 ```dart
 import 'package:revere/core.dart';
@@ -42,25 +41,51 @@ logger.addTransport(AnalyticsTransport(config: {'name': 'custom_event'}));
 await logger.info('Hello!');
 ```
 
----
+## Packages
 
-## Provided Transporters
+| Package | Role |
+|---|---|
+| `core` | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
+| `file_transport` | File output and rolling file output |
+| `firebase_transport` | Firebase Analytics and Crashlytics transports |
+| `android_log_transport` | Android Logcat transport |
+| `notification_transport` | Local notification transport (mobile/desktop) |
+| `swift_log_transport` | Apple swift-log transport for iOS/macOS |
 
-| Package Name              | Description / Features                                 |
+## Directory Structure
+
+```text
+packages/
+  core/                   # Core logger (Logger, Console/HTTP, base)
+  file_transport/         # File and rolling file output
+  firebase_transport/     # Firebase Analytics/Crashlytics output
+  android_log_transport/  # Android Logcat output
+  notification_transport/ # Notification output (push/desktop)
+  swift_log_transport/    # Apple swift-log output
+```
+
+## Features
+
+- Multiple transports per logger (e.g. file + Firebase + console)
+- Per-transport config (format, color, headers, etc.)
+- Log level threshold per transport
+- Fully asynchronous, awaitable logging
+- Easy extension via abstract base class
+
+## Provided Transports
+
+| Package Name            | Description / Features |
 |--------------------------|-------------------------------------------------------|
-| core (Console/HTTP)      | Console output, HTTP POST. Config: color, format, headers, etc. |
-| file_transport           | File output, rolling file support                      |
-| firebase_transport       | Firebase Analytics/Crashlytics. Configurable event name, template |
-| android_log_transport    | Android Logcat output. Configurable tag, template      |
-| swift_log_transport      | Apple swift-log output. Configurable label, metadata, template |
+| core (Console/HTTP)     | Console output and HTTP POST. Config: color, format, headers, etc. |
+| file_transport          | File output and rolling file support |
+| firebase_transport      | Firebase Analytics/Crashlytics. Configurable event name and template |
+| android_log_transport   | Android Logcat output. Configurable tag and template |
+| notification_transport  | Push/desktop notification output. Configurable title and template |
+| swift_log_transport     | Apple swift-log output. Configurable label, metadata, and template |
 
----
+## Package Documentation
 
-## Details & Setup for Each Transporter
-
-See each package's README.md for details and setup instructions.
-
----
+See each package README for setup, configuration, and platform-specific notes.
 
 ## How to Extend
 
@@ -71,4 +96,4 @@ See each package's README.md for details and setup instructions.
 
 ## Testing
 
-- Run `flutter test` in each package to verify logger and Transporters.
+- Run `flutter test` in each package to verify logger and transports.

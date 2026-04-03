@@ -1,56 +1,35 @@
-a specialized package that includes platform-specific implementation code for
-samples, guidance on mobile development, and a full API reference.
 # Revere Swift Log Transport
 
-Transporter for outputting logs to Apple swift-log from the revere logger (iOS/macOS).
-
----
-
 ## Overview
-
-- Sends logs from Dart/Flutter directly to Apple swift-log
-- Configurable label, metadata, and message template via config
-
----
+Outputs logs from the revere logger to Apple swift-log (iOS/macOS). Supports custom label, metadata, and message formatting.
 
 ## Usage
-
 ```dart
 import 'package:swift_log_transport/swift_log_transport.dart';
 import 'package:revere/core.dart';
-
 final logger = Logger();
 logger.addTransport(SwiftLogTransport(config: {
-	'label': 'MyApp',
-	'metadata': {'env': 'prod'},
-	'format': '[{level}] {message}',
+  'label': 'MyApp',
+  'metadata': {'env': 'prod'},
+  'format': '[{level}] {message}',
 }));
-
 await logger.info('Hello iOS/macOS!');
 ```
 
----
+## Configuration
+- `label`: swift-log label (default: 'Revere')
+- `metadata`: swift-log metadata (default: `{}`)
+- `format`: Message format (default: '[{level}] {message}')
 
 ## App-side Setup
-
-- Add dependency in pubspec.yaml:
+Add dependency in pubspec.yaml:
 ```yaml
 dependencies:
-	swift_log_transport:
-		path: ../swift_log_transport
+  swift_log_transport:
+    path: ../swift_log_transport
 ```
 
+## Additional Information
 - No special setup required for iOS/macOS projects (standard swift-log output)
-
----
-
-## Main Config Options
-
-- `label`: swift-log label
-- `metadata`: Additional metadata (Map<String, String>)
-- `format`: Message template
-
----
-
-See also comments in lib/swift_log_transport.dart for details.
-
+- Uses Apple's swift-log under the hood.
+- For more information, see [revere](https://github.com/kumo01GitHub/revere/).
