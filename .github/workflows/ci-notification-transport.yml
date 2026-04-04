@@ -1,0 +1,28 @@
+name: CI / Notification Transport
+
+on:
+  workflow_call:
+
+jobs:
+  notification_transport:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/notification_transport
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Spec test
+        run: flutter test test

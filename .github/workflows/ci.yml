@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  core:
+    uses: ./.github/workflows/ci-core.yml
+
+  file_transport:
+    uses: ./.github/workflows/ci-file-transport.yml
+
+  firebase_transport:
+    uses: ./.github/workflows/ci-firebase-transport.yml
+
+  notification_transport:
+    uses: ./.github/workflows/ci-notification-transport.yml
+
+  android_log_transport:
+    uses: ./.github/workflows/ci-android-log-transport.yml
+
+  swift_log_transport:
+    uses: ./.github/workflows/ci-swift-log-transport.yml
