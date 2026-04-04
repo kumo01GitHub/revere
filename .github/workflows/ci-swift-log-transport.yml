@@ -52,12 +52,17 @@ jobs:
         run: flutter pub get
         working-directory: packages/swift_log_transport/example
 
+      - name: Set device (macOS)
+        if: matrix.platform == 'macos'
+        run: echo "DEVICE=macos" >> $GITHUB_ENV
+
       - name: Start iOS Simulator
         if: matrix.platform == 'ios'
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "import json,sys; devices=json.load(sys.stdin)['devices']; iphones=[d for rt,ds in devices.items() for d in ds if 'iPhone' in d['name'] and d['isAvailable'] and '${{ matrix.ios-version }}' in rt]; print(iphones[-1]['udid'])")
           xcrun simctl boot "$UDID"
+          echo "DEVICE=$UDID" >> $GITHUB_ENV
 
       - name: Integration test
-        run: flutter test integration_test -d ${{ matrix.platform }}
+        run: flutter test integration_test -d "$DEVICE"
         working-directory: packages/swift_log_transport/example
