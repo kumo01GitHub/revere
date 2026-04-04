@@ -59,7 +59,7 @@ void main() {
       expect(body, 'warn: watch out');
     });
 
-    test('includes error and stackTrace in body when present', () async {
+    test('includes error in body when present', () async {
       final transport = _FakeNotificationTransport(
         config: {'format': '{message} ({error})'},
       );
@@ -71,6 +71,68 @@ void main() {
 
       final (_, _, body, _) = transport.calls.first;
       expect(body, 'failed (${error.toString()})');
+    });
+
+    test('includes stackTrace in body when format uses {stackTrace}', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'format': '{message}|{stackTrace}'},
+      );
+
+      final trace = StackTrace.fromString('frame0\nframe1');
+      await transport.emitLog(
+        LogEvent(level: LogLevel.error, message: 'crash', stackTrace: trace),
+      );
+
+      final (_, _, body, _) = transport.calls.first;
+      expect(body, 'crash|${trace.toString()}');
+    });
+
+    test('{stackTrace} replaced with empty string when null', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'format': '{message}|{stackTrace}'},
+      );
+
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'ok'));
+
+      final (_, _, body, _) = transport.calls.first;
+      expect(body, 'ok|');
+    });
+
+    test('{error} replaced with empty string when null', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'format': '{message}|{error}'},
+      );
+
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'ok'));
+
+      final (_, _, body, _) = transport.calls.first;
+      expect(body, 'ok|');
+    });
+
+    test('{context} placeholder in body format is replaced', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'format': '[{context}] {message}'},
+      );
+
+      await transport.emitLog(
+        LogEvent(level: LogLevel.info, message: 'ping', context: 'auth'),
+      );
+
+      final (_, _, body, _) = transport.calls.first;
+      expect(body, '[auth] ping');
+    });
+
+    test('null context replaced with empty string in body and title', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'format': '[{context}] {message}'},
+      );
+
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'ping'));
+
+      final (_, title, body, _) = transport.calls.first;
+      expect(body, '[] ping');
+      // Default title template is "[{level}] {context}"; context is empty.
+      expect(title, '[info] ');
     });
 
     test('includes timestamp in body when format uses {timestamp}', () async {
@@ -117,20 +179,55 @@ void main() {
       expect(transport.calls, hasLength(2));
     });
 
-    test('uses configured android channel id in notificationDetails', () async {
-      final transport = _FakeNotificationTransport(
-        config: {
-          'androidChannelId': 'my_channel',
-          'androidChannelName': 'My Channel',
-        },
-      );
+    test(
+      'uses configured android channel id and name in notificationDetails',
+      () async {
+        final transport = _FakeNotificationTransport(
+          config: {
+            'androidChannelId': 'my_channel',
+            'androidChannelName': 'My Channel',
+          },
+        );
 
+        await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+
+        final (_, _, _, details) = transport.calls.first;
+        final android = details.android!;
+        expect(android.channelId, 'my_channel');
+        expect(android.channelName, 'My Channel');
+      },
+    );
+
+    test('androidChannelId defaults to revere_logs', () async {
+      final transport = _FakeNotificationTransport();
       await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(transport.calls.first.$4.android!.channelId, 'revere_logs');
+    });
 
-      final (_, _, _, details) = transport.calls.first;
-      final android = details.android!;
-      expect(android.channelId, 'my_channel');
-      expect(android.channelName, 'My Channel');
+    test('androidChannelName defaults to Revere Logs', () async {
+      final transport = _FakeNotificationTransport();
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(transport.calls.first.$4.android!.channelName, 'Revere Logs');
+    });
+
+    test('androidChannelDescription defaults to Log notifications', () async {
+      final transport = _FakeNotificationTransport();
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(
+        transport.calls.first.$4.android!.channelDescription,
+        'Log notifications',
+      );
+    });
+
+    test('androidChannelDescription can be customised', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'androidChannelDescription': 'App debug logs'},
+      );
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(
+        transport.calls.first.$4.android!.channelDescription,
+        'App debug logs',
+      );
     });
 
     test('trace/debug use low importance and priority', () async {

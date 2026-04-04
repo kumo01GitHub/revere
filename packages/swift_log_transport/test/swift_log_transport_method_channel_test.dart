@@ -5,37 +5,47 @@ import 'package:swift_log_transport/swift_log_transport_method_channel.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelSwiftLogTransport platform = MethodChannelSwiftLogTransport();
-  const MethodChannel channel = MethodChannel('swift_log_transport');
-
-  setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      return '42';
-    });
-  });
+  final platform = MethodChannelSwiftLogTransport();
+  const channel = MethodChannel('swift_log_transport');
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, null);
   });
 
-  test('log() calls method channel', () async {
-    final testEvent = {
+  test('log() invokes "log" method with the supplied event map', () async {
+    final event = {
       'level': 'info',
-      'message': 'test',
-      'loggerName': 'test',
-      'timestamp': DateTime.now().toIso8601String()
+      'message': 'test message',
+      'timestamp': '2024-01-01T00:00:00.000Z',
+      'context': 'TestService',
+      'label': 'com.example',
+      'metadata': {'env': 'test'},
+      'error': null,
+      'stackTrace': null,
     };
-    bool called = false;
+
+    MethodCall? captured;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      expect(methodCall.method, 'log');
-      expect(methodCall.arguments, testEvent);
-      called = true;
+        .setMockMethodCallHandler(channel, (call) async {
+      captured = call;
       return null;
     });
-    await platform.log(testEvent);
-    expect(called, isTrue);
+
+    await platform.log(event);
+
+    expect(captured, isNotNull);
+    expect(captured!.method, 'log');
+    expect(captured!.arguments, event);
+  });
+
+  test('log() completes without error on null return', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => null);
+
+    await expectLater(
+      platform.log({'level': 'debug', 'message': 'msg', 'timestamp': ''}),
+      completes,
+    );
   });
 }
