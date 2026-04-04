@@ -42,7 +42,8 @@ void main() {
     });
 
     test('uses custom name template', () async {
-      final transport = _FakeAnalyticsTransport(config: {'name': 'app_{level}'});
+      final transport =
+          _FakeAnalyticsTransport(config: {'name': 'app_{level}'});
 
       await transport.emitLog(
         LogEvent(level: LogLevel.error, message: 'crash'),
