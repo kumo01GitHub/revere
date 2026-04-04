@@ -14,16 +14,60 @@ logger.addTransport(NotificationTransport(config: {
 	'androidChannelId': 'myapp_logs',
 	'androidChannelName': 'MyApp Logs',
 	'androidChannelDescription': 'Log notifications',
+	'groupKey': 'myapp_log_group',
+	'androidOngoing': false,
+	'darwinThreadIdentifier': 'myapp_logs',
+	'linuxDefaultActionName': 'View Log',
 }));
 await logger.info('Hello notification!');
 ```
 
+If you have already initialized `FlutterLocalNotificationsPlugin` in your app,
+pass it directly and initialization will be skipped:
+```dart
+final plugin = FlutterLocalNotificationsPlugin();
+// ... your own initialize() call ...
+logger.addTransport(NotificationTransport(plugin: plugin));
+```
+
 ## Configuration
-- `title`: Notification title (all platforms, supports `{level}` and `{context}`; default: `[{level}] {context}`)
-- `format`: Notification body/message (supports `{level}`, `{message}`, `{timestamp}`, `{error}`, `{stackTrace}`, `{context}`; default: `[{level}] {message}`)
-- `androidChannelId`: Android channel ID (default: 'revere_logs')
-- `androidChannelName`: Android channel name (default: 'Revere Logs')
-- `androidChannelDescription`: Android channel description (default: 'Log notifications')
+
+### General
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `format` | `String` | `'[{level}] {message}'` | Notification body template. Tokens: `{level}`, `{message}`, `{timestamp}`, `{error}`, `{stackTrace}`, `{context}` |
+| `title` | `String` | `'[{level}] {context}'` | Notification title template. Tokens: `{level}`, `{context}` |
+
+### Android
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `androidChannelId` | `String` | `'revere_logs'` | Notification channel ID |
+| `androidChannelName` | `String` | `'Revere Logs'` | Notification channel name |
+| `androidChannelDescription` | `String` | `'Log notifications'` | Notification channel description |
+| `androidIcon` | `String` | `'@mipmap/ic_launcher'` | Notification icon resource name (also used in initialization) |
+| `groupKey` | `String?` | `null` | Notification group key |
+| `androidGroupSummary` | `bool` | `false` | Whether this notification acts as the group summary |
+| `androidAutoCancel` | `bool` | `true` | Dismiss notification when tapped |
+| `androidOngoing` | `bool` | `false` | Whether the notification is ongoing (cannot be dismissed by the user) |
+| `androidSilent` | `bool` | `false` | Post the notification silently (no sound, vibration, or visual interruption) |
+| `androidPlaySound` | `bool` | `true` | Play sound with notification |
+| `androidEnableVibration` | `bool` | `true` | Vibrate with notification |
+
+### iOS / macOS (Darwin)
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `darwinPresentAlert` | `bool?` | `null` | Show alert when app is in foreground (null = use initialization default) |
+| `darwinPresentBadge` | `bool?` | `null` | Update app badge when notification arrives |
+| `darwinPresentSound` | `bool?` | `null` | Play sound when app is in foreground |
+| `darwinPresentBanner` | `bool?` | `null` | Show banner when app is in foreground (iOS 14+ / macOS 11+) |
+| `darwinBadgeNumber` | `int?` | `null` | Badge number to display on app icon |
+| `darwinSubtitle` | `String?` | `null` | Notification subtitle |
+| `darwinThreadIdentifier` | `String?` | `null` | Thread identifier for notification grouping |
+
+### Linux
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `linuxDefaultActionName` | `String` | `'Open'` | Label for the default notification action (also used in initialization) |
 
 ## App-side Setup
 Add dependency in your app's `pubspec.yaml`:
