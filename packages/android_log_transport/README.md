@@ -17,7 +17,7 @@ await logger.info('Hello Android!');
 
 ## Configuration
 - `tag`: Logcat tag (default: 'Revere')
-- `format`: Message format (default: '[{level}] {message}')
+- `format`: Message format (default: `'{message}'`)
 
 ## App-side Setup
 Add dependency in pubspec.yaml:

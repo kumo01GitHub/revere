@@ -78,10 +78,10 @@ packages/
 |--------------------------|-------------------------------------------------------|
 | core (Console/HTTP)     | Console output and HTTP POST. Config: color, format, headers, etc. |
 | file_transport          | File output and rolling file support |
-| firebase_transport      | Firebase Analytics/Crashlytics. Configurable event name and template |
-| android_log_transport   | Android Logcat output. Configurable tag and template |
-| notification_transport  | Push/desktop notification output. Configurable title and template |
-| swift_log_transport     | Apple swift-log output. Configurable label, metadata, and template |
+| firebase_transport      | Firebase Analytics/Crashlytics. Configurable event name and format |
+| android_log_transport   | Android Logcat output. Configurable tag and format |
+| notification_transport  | Push/desktop notification output. Configurable title and format |
+| swift_log_transport     | Apple swift-log output. Configurable label, metadata, and format |
 
 ## Package Documentation
 

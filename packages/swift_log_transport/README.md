@@ -19,7 +19,7 @@ await logger.info('Hello iOS/macOS!');
 ## Configuration
 - `label`: swift-log label (default: 'Revere')
 - `metadata`: swift-log metadata (default: `{}`)
-- `format`: Message format (default: '[{level}] {message}')
+- `format`: Message format (default: `'{message}'`)
 
 ## App-side Setup
 Add dependency in pubspec.yaml:

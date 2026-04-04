@@ -11,17 +11,17 @@ import 'package:revere/core.dart';
 final logger = Logger();
 logger.addTransport(AnalyticsTransport(config: {
 	'name': 'custom_event',
-	'template': '[{level}] {message}',
+	'format': '[{level}] {message}',
 }));
 logger.addTransport(CrashlyticsTransport(config: {
-	'template': '[{level}] {message} {context}',
+	'format': '[{level}] {message} {context}',
 }));
 await logger.info('Hello Firebase!');
 ```
 
 ## Configuration
-- `name`: Event name (AnalyticsTransport, default: 'log_event')
-- `template`: Message format (both transports)
+- `name`: Event name (AnalyticsTransport, default: `'revere'`)
+- `format`: Message format (both transports, default: `'[{level}:{context}] {message}'`)
 - `callOptions`: AnalyticsCallOptions (optional)
 
 ## App-side Setup

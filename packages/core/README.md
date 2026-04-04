@@ -5,7 +5,7 @@ The core logging package for the Revere ecosystem. Provides the main `Logger` cl
 
 ## Usage
 ```dart
-import 'package:core/core.dart';
+import 'package:revere/core.dart';
 
 final logger = Logger();
 logger.addTransport(ConsoleTransport(
@@ -31,6 +31,8 @@ await logger.error('Oops', error: Exception('fail'));
 
 ## Transports
 - **ConsoleTransport**: Output to stdout/stderr, supports color and format customization
+- **PrettyConsoleTransport**: Human-friendly console output with emoji indicators, aligned level labels, and optional error/stack trace formatting
+- **BufferedTransport**: Decorator that buffers log events and flushes them in batches to an inner transport (configurable `maxSize` and `flushInterval`)
 - **HttpTransport**: Send logs as JSON to a remote HTTP endpoint (configurable headers, proxy, timeout)
 - **Custom**: You can implement your own by extending `Transport`
 

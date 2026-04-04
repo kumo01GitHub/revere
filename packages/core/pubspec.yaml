@@ -1,6 +1,6 @@
 name: revere
 description: "Core logger package for the revere monorepo. Provides extensible, asynchronous logging for Flutter/Dart projects."
-version: 0.0.4
+version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/packages/core
