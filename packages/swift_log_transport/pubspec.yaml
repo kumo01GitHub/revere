@@ -24,8 +24,10 @@ flutter:
   plugin:
     platforms:
       ios:
+        sharedDarwinSource: true
         pluginClass: SwiftLogTransportPlugin
         dartPluginClass: SwiftLogTransport
       macos:
+        sharedDarwinSource: true
         pluginClass: SwiftLogTransportPlugin
         dartPluginClass: SwiftLogTransport

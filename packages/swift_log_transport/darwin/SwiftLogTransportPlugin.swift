@@ -1,33 +1,24 @@
 import Foundation
-#if canImport(FlutterMacOS)
+#if os(macOS)
 import FlutterMacOS
-#endif
-#if canImport(Flutter)
+#else
 import Flutter
 #endif
-#if canImport(Logging)
 import Logging
-#endif
 
-@objc public class SwiftLogTransportPlugin: NSObject {
+@objc public class SwiftLogTransportPlugin: NSObject, FlutterPlugin {
   static var loggerCache: [String: Logger] = [:]
 
-  // For Flutter iOS
-  @objc public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "swift_log_transport", binaryMessenger: registrar.messenger())
-    let instance = SwiftLogTransportPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  // For Flutter macOS
-  @objc public static func register(with registrar: FlutterPluginRegistrar) {
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    #if os(macOS)
     let channel = FlutterMethodChannel(name: "swift_log_transport", binaryMessenger: registrar.messenger)
+    #else
+    let channel = FlutterMethodChannel(name: "swift_log_transport", binaryMessenger: registrar.messenger())
+    #endif
     let instance = SwiftLogTransportPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
-}
 
-extension SwiftLogTransportPlugin: FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if call.method == "log", let args = call.arguments as? [String: Any] {
       Self.logEvent(args: args)
@@ -38,18 +29,14 @@ extension SwiftLogTransportPlugin: FlutterPlugin {
   }
 
   static func logEvent(args: [String: Any]) {
-#if canImport(Logging)
     let level = (args["level"] as? String)?.lowercased() ?? "info"
     let message = args["message"] as? String ?? ""
-    let timestamp = args["timestamp"] as? String ?? ""
-    let error = args["error"] as? String
-    let stackTrace = args["stackTrace"] as? String
     let context = args["context"] as? String ?? ""
     let label = args["label"] as? String ?? "Revere"
     let metadataMap = args["metadata"] as? [String: String]
 
-    let logger: Logger
     let loggerKey = "\(label):\(context)"
+    var logger: Logger
     if let cached = loggerCache[loggerKey] {
       logger = cached
     } else {
@@ -61,22 +48,15 @@ extension SwiftLogTransportPlugin: FlutterPlugin {
       loggerCache[loggerKey] = newLogger
       logger = newLogger
     }
-    if let metadataMap = metadataMap {
-      for (k, v) in metadataMap { logger[metadataKey: k] = .string(v) }
-    }
 
     switch level {
-    case "trace": logger.trace("\(logMsg)")
-    case "debug": logger.debug("\(logMsg)")
-    case "info": logger.info("\(logMsg)")
-    case "warn": logger.warning("\(logMsg)")
-    case "error": logger.error("\(logMsg)")
-    case "fatal": logger.critical("\(logMsg)")
-    default: logger.info("\(logMsg)")
+    case "trace": logger.trace("\(message)")
+    case "debug": logger.debug("\(message)")
+    case "info": logger.info("\(message)")
+    case "warn": logger.warning("\(message)")
+    case "error": logger.error("\(message)")
+    case "fatal": logger.critical("\(message)")
+    default: logger.info("\(message)")
     }
-#else
-    // Fallback: print if Logging is not available
-    print("[SwiftLog] \(args)")
-#endif
   }
 }

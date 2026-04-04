@@ -20,8 +20,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Logging", package: "swift-log")
             ],
-            path: ".",
-            sources: ["ios/Classes", "macos/Classes"]
+            path: "darwin"
         )
     ]
 )
