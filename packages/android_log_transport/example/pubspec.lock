@@ -194,13 +194,13 @@ packages:
     source: hosted
     version: "5.0.5"
   revere:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: revere
-      sha256: b24b9315fb0411ab3e9e7b6a8e716c01179175b3730735ea7f3101f1346a4b1d
+      sha256: "6ff978d4c5a827fa7ec12557d23a8e21bde498d3e2e59684bdd80954f34ee278"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   sky_engine:
     dependency: transitive
     description: flutter

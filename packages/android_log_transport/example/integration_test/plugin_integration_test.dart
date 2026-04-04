@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:android_log_transport/android_log_transport.dart';
-import '../../../core/lib/core.dart' show LogEvent, LogLevel;
+import 'package:revere/core.dart' show LogEvent, LogLevel;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

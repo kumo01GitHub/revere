@@ -5,7 +5,10 @@ on:
 
 jobs:
   swift_log_transport:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-13, macos-14, macos-15]
     defaults:
       run:
         working-directory: packages/swift_log_transport
@@ -31,6 +34,16 @@ jobs:
         run: flutter pub get
         working-directory: packages/swift_log_transport/example
 
+      - name: Start iOS Simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c "
+import json, sys
+devices = json.load(sys.stdin)['devices']
+iphones = [d for runtimes in devices.values() for d in runtimes if 'iPhone' in d['name'] and d['isAvailable']]
+print(iphones[-1]['udid'])
+")
+          xcrun simctl boot "$UDID"
+
       - name: Integration test
-        run: flutter test integration_test
+        run: flutter test integration_test -d ios
         working-directory: packages/swift_log_transport/example
