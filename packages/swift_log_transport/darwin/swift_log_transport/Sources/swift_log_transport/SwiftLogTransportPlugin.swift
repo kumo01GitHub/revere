@@ -40,10 +40,10 @@ import Logging
     if let cached = loggerCache[loggerKey] {
       logger = cached
     } else {
-      var newLogger = Logger(label: label, factory: StreamLogHandler.standardOutput)
-      newLogger[metadataKey: "category"] = .string(context)
+      var newLogger = Logger(label: label, factory: { l in StreamLogHandler.standardOutput(label: l) })
+      newLogger[metadataKey: "category"] = Logger.MetadataValue.string(context)
       if let metadataMap = metadataMap {
-        for (k, v) in metadataMap { newLogger[metadataKey: k] = .string(v) }
+        for (k, v) in metadataMap { newLogger[metadataKey: k] = Logger.MetadataValue.string(v) }
       }
       loggerCache[loggerKey] = newLogger
       logger = newLogger
