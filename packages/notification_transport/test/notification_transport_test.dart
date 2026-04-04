@@ -405,5 +405,21 @@ void main() {
       await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
       expect(transport.calls.first.$4.linux!.defaultActionName, 'View Log');
     });
+
+    // --- Windows config ---
+
+    test('windows notificationDetails subtitle defaults to null', () async {
+      final transport = _FakeNotificationTransport();
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(transport.calls.first.$4.windows!.subtitle, isNull);
+    });
+
+    test('windowsSubtitle can be configured', () async {
+      final transport = _FakeNotificationTransport(
+        config: {'windowsSubtitle': 'system logs'},
+      );
+      await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
+      expect(transport.calls.first.$4.windows!.subtitle, 'system logs');
+    });
   });
 }

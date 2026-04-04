@@ -168,3 +168,35 @@ jobs:
           sleep 1
           flutter test integration_test -d linux
         working-directory: packages/notification_transport/example
+
+  # ── Windows integration tests ─────────────────────────────────────────────────
+  windows_integration_test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: packages/notification_transport
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Spec test
+        run: flutter test test
+
+      - name: Build example (dependency resolution)
+        run: flutter pub get
+        working-directory: packages/notification_transport/example
+
+      - name: Integration test
+        run: flutter test integration_test -d windows
+        working-directory: packages/notification_transport/example
