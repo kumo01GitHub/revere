@@ -1,5 +1,5 @@
-export 'logger.dart';
-export 'transport.dart';
-export 'log_level.dart';
-export 'logger_mixin.dart';
-export 'log_event.dart';
+export 'src/logger.dart';
+export 'src/transport.dart';
+export 'src/log_level.dart';
+export 'src/logger_mixin.dart';
+export 'src/log_event.dart';

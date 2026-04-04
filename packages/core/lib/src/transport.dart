@@ -3,9 +3,11 @@ import 'package:meta/meta.dart';
 import 'log_event.dart';
 import 'log_level.dart';
 
-/// Abstract class for log transport with per-transport config.
+/// Abstract base class for log transports.
 ///
-/// Example config: {`format`: String, `colorize`: bool, ...}
+/// Subclasses implement [emitLog] to deliver log events to their destination.
+/// config accepts arbitrary key/value options to configure the transport without
+/// requiring subclass constructor changes.
 abstract class Transport {
   final LogLevel level;
   final Map<String, dynamic> config;

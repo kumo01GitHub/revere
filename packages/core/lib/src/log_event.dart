@@ -1,9 +1,13 @@
 import 'log_level.dart';
 
-/// Log event type
+/// Represents a single log event.
+///
+/// [message] accepts any object. String transports call [message.toString()];
+/// structured transports (e.g. [HttpTransport]) can inspect the runtime type
+/// to embed rich data directly in their payload.
 class LogEvent {
   final LogLevel level;
-  final String message;
+  final Object message;
   final DateTime timestamp;
   final Object? error;
   final StackTrace? stackTrace;
