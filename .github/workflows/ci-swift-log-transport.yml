@@ -10,11 +10,20 @@ jobs:
       matrix:
         include:
           - os: macos-14
+            platform: ios
             ios-version: "17"
           - os: macos-15
+            platform: ios
             ios-version: "18"
           - os: macos-26
+            platform: ios
             ios-version: "26"
+          - os: macos-14
+            platform: macos
+          - os: macos-15
+            platform: macos
+          - os: macos-26
+            platform: macos
     defaults:
       run:
         working-directory: packages/swift_log_transport
@@ -41,10 +50,11 @@ jobs:
         working-directory: packages/swift_log_transport/example
 
       - name: Start iOS Simulator
+        if: matrix.platform == 'ios'
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "import json,sys; devices=json.load(sys.stdin)['devices']; iphones=[d for rt,ds in devices.items() for d in ds if 'iPhone' in d['name'] and d['isAvailable'] and '${{ matrix.ios-version }}' in rt]; print(iphones[-1]['udid'])")
           xcrun simctl boot "$UDID"
 
       - name: Integration test
-        run: flutter test integration_test -d ios
+        run: flutter test integration_test -d ${{ matrix.platform }}
         working-directory: packages/swift_log_transport/example
