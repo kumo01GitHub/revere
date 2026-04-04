@@ -28,6 +28,9 @@ migrate_working_dir/
 /pubspec.lock
 **/doc/api/
 .dart_tool/
+
+# Swift Package Manager
+Package.resolved
 .flutter-plugins-dependencies
 /build/
 /coverage/
