@@ -52,11 +52,6 @@ jobs:
         run: flutter pub get
         working-directory: packages/swift_log_transport/example
 
-      - name: Generate plugin registrant (macOS)
-        if: matrix.platform == 'macos'
-        run: flutter build macos --config-only
-        working-directory: packages/swift_log_transport/example
-
       - name: Start iOS Simulator
         if: matrix.platform == 'ios'
         run: |
