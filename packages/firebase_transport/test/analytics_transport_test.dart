@@ -3,78 +3,68 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:revere/core.dart';
 import 'package:firebase_transport/analytics_transport.dart';
 
+class _FakeAnalyticsTransport extends AnalyticsTransport {
+  final List<(String, Map<String, dynamic>, AnalyticsCallOptions?)> calls = [];
+
+  _FakeAnalyticsTransport({super.level, super.config});
+
+  @override
+  Future<void> dispatchEvent(
+    String name,
+    Map<String, dynamic> parameters,
+    AnalyticsCallOptions? callOptions,
+  ) async {
+    calls.add((name, parameters, callOptions));
+  }
+}
+
 void main() {
   group('AnalyticsTransport', () {
     test('calls logEvent with formatted message and parameters', () async {
-      String? capturedName;
-      Map<String, dynamic>? capturedParams;
-      AnalyticsCallOptions? capturedOptions;
+      final transport = _FakeAnalyticsTransport();
 
-      final transport = AnalyticsTransport(
-        logEventOverride: (name, params, options) async {
-          capturedName = name;
-          capturedParams = params;
-          capturedOptions = options;
-        },
+      await transport.emitLog(
+        LogEvent(
+          level: LogLevel.info,
+          message: 'hello',
+          context: 'auth',
+          timestamp: DateTime.parse('2024-01-01T00:00:00.000Z'),
+        ),
       );
 
-      final event = LogEvent(
-        level: LogLevel.info,
-        message: 'hello',
-        context: 'auth',
-        timestamp: DateTime.parse('2024-01-01T00:00:00.000Z'),
-      );
-      await transport.emitLog(event);
-
-      expect(capturedName, 'revere');
-      expect(capturedParams?['level'], 'info');
-      expect(capturedParams?['message'], '[info:auth] hello');
-      expect(capturedParams?['context'], 'auth');
-      expect(capturedOptions, isNull);
+      expect(transport.calls, hasLength(1));
+      final (name, params, options) = transport.calls.first;
+      expect(name, 'revere');
+      expect(params['level'], 'info');
+      expect(params['message'], '[info:auth] hello');
+      expect(params['context'], 'auth');
+      expect(options, isNull);
     });
 
     test('uses custom name template', () async {
-      String? capturedName;
-
-      final transport = AnalyticsTransport(
-        config: {'name': 'app_{level}'},
-        logEventOverride: (name, params, options) async {
-          capturedName = name;
-        },
-      );
+      final transport = _FakeAnalyticsTransport(config: {'name': 'app_{level}'});
 
       await transport.emitLog(
         LogEvent(level: LogLevel.error, message: 'crash'),
       );
 
-      expect(capturedName, 'app_error');
+      expect(transport.calls.first.$1, 'app_error');
     });
 
     test('uses custom format template', () async {
-      Map<String, dynamic>? capturedParams;
-
-      final transport = AnalyticsTransport(
+      final transport = _FakeAnalyticsTransport(
         config: {'format': '{level}: {message}'},
-        logEventOverride: (name, params, options) async {
-          capturedParams = params;
-        },
       );
 
       await transport.emitLog(
         LogEvent(level: LogLevel.warn, message: 'something'),
       );
 
-      expect(capturedParams?['message'], 'warn: something');
+      expect(transport.calls.first.$2['message'], 'warn: something');
     });
 
     test('includes error and stackTrace when present', () async {
-      Map<String, dynamic>? capturedParams;
-
-      final transport = AnalyticsTransport(
-        logEventOverride: (name, params, options) async {
-          capturedParams = params;
-        },
-      );
+      final transport = _FakeAnalyticsTransport();
 
       final error = Exception('oops');
       final stack = StackTrace.current;
@@ -87,39 +77,26 @@ void main() {
         ),
       );
 
-      expect(capturedParams?['error'], error.toString());
-      expect(capturedParams?['stackTrace'], stack.toString());
+      final params = transport.calls.first.$2;
+      expect(params['error'], error.toString());
+      expect(params['stackTrace'], stack.toString());
     });
 
-    test('does not call logEvent below threshold', () async {
-      int callCount = 0;
-
-      final transport = AnalyticsTransport(
-        level: LogLevel.error,
-        logEventOverride: (name, params, options) async {
-          callCount++;
-        },
-      );
+    test('does not call dispatchEvent below threshold', () async {
+      final transport = _FakeAnalyticsTransport(level: LogLevel.error);
 
       await transport.log(LogEvent(level: LogLevel.info, message: 'ignored'));
 
-      expect(callCount, 0);
+      expect(transport.calls, isEmpty);
     });
 
-    test('calls logEvent at or above threshold', () async {
-      int callCount = 0;
-
-      final transport = AnalyticsTransport(
-        level: LogLevel.warn,
-        logEventOverride: (name, params, options) async {
-          callCount++;
-        },
-      );
+    test('calls dispatchEvent at or above threshold', () async {
+      final transport = _FakeAnalyticsTransport(level: LogLevel.warn);
 
       await transport.log(LogEvent(level: LogLevel.warn, message: 'warn'));
       await transport.log(LogEvent(level: LogLevel.error, message: 'error'));
 
-      expect(callCount, 2);
+      expect(transport.calls, hasLength(2));
     });
   });
 }

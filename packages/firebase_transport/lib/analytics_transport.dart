@@ -8,14 +8,7 @@ class AnalyticsTransport extends Transport {
   final String name;
   final AnalyticsCallOptions? callOptions;
 
-  @visibleForTesting
-  final Future<void> Function(
-    String name,
-    Map<String, dynamic> parameters,
-    AnalyticsCallOptions? callOptions,
-  )? logEventOverride;
-
-  AnalyticsTransport({super.level, super.config, this.logEventOverride})
+  AnalyticsTransport({super.level, super.config})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}',
         name = (config['name'] as String?) ?? 'revere',
@@ -45,14 +38,19 @@ class AnalyticsTransport extends Transport {
       if (event.stackTrace != null) 'stackTrace': event.stackTrace.toString(),
     };
 
-    if (logEventOverride != null) {
-      await logEventOverride!(name, params, callOptions);
-    } else {
-      await FirebaseAnalytics.instance.logEvent(
-        name: name,
-        parameters: params,
-        callOptions: callOptions,
-      );
-    }
+    await dispatchEvent(name, params, callOptions);
+  }
+
+  @protected
+  Future<void> dispatchEvent(
+    String name,
+    Map<String, dynamic> parameters,
+    AnalyticsCallOptions? callOptions,
+  ) async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: name,
+      parameters: parameters,
+      callOptions: callOptions,
+    );
   }
 }

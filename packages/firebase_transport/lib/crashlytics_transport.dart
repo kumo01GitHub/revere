@@ -6,10 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 class CrashlyticsTransport extends Transport {
   final String format;
 
-  @visibleForTesting
-  final Future<void> Function(String message)? logOverride;
-
-  CrashlyticsTransport({super.level, super.config, this.logOverride})
+  CrashlyticsTransport({super.level, super.config})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}';
 
@@ -22,10 +19,11 @@ class CrashlyticsTransport extends Transport {
         .replaceAll('{context}', event.context ?? '')
         .replaceAll('{error}', event.error?.toString() ?? '')
         .replaceAll('{stackTrace}', event.stackTrace?.toString() ?? '');
-    if (logOverride != null) {
-      await logOverride!(msg);
-    } else {
-      await FirebaseCrashlytics.instance.log(msg);
-    }
+    await dispatchLog(msg);
+  }
+
+  @protected
+  Future<void> dispatchLog(String message) async {
+    await FirebaseCrashlytics.instance.log(message);
   }
 }

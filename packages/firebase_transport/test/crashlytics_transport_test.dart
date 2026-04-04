@@ -2,16 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:revere/core.dart';
 import 'package:firebase_transport/crashlytics_transport.dart';
 
+class _FakeCrashlyticsTransport extends CrashlyticsTransport {
+  final List<String> calls = [];
+
+  _FakeCrashlyticsTransport({super.level, super.config});
+
+  @override
+  Future<void> dispatchLog(String message) async {
+    calls.add(message);
+  }
+}
+
 void main() {
   group('CrashlyticsTransport', () {
     test('calls log with formatted message', () async {
-      String? capturedMsg;
-
-      final transport = CrashlyticsTransport(
-        logOverride: (msg) async {
-          capturedMsg = msg;
-        },
-      );
+      final transport = _FakeCrashlyticsTransport();
 
       await transport.emitLog(
         LogEvent(
@@ -22,34 +27,24 @@ void main() {
         ),
       );
 
-      expect(capturedMsg, '[info:auth] hello');
+      expect(transport.calls, ['[info:auth] hello']);
     });
 
     test('uses custom format template', () async {
-      String? capturedMsg;
-
-      final transport = CrashlyticsTransport(
+      final transport = _FakeCrashlyticsTransport(
         config: {'format': '{level}: {message}'},
-        logOverride: (msg) async {
-          capturedMsg = msg;
-        },
       );
 
       await transport.emitLog(
         LogEvent(level: LogLevel.error, message: 'crash'),
       );
 
-      expect(capturedMsg, 'error: crash');
+      expect(transport.calls, ['error: crash']);
     });
 
     test('includes error in formatted message', () async {
-      String? capturedMsg;
-
-      final transport = CrashlyticsTransport(
+      final transport = _FakeCrashlyticsTransport(
         config: {'format': '{message} ({error})'},
-        logOverride: (msg) async {
-          capturedMsg = msg;
-        },
       );
 
       final error = Exception('oops');
@@ -57,38 +52,24 @@ void main() {
         LogEvent(level: LogLevel.error, message: 'failed', error: error),
       );
 
-      expect(capturedMsg, 'failed (${error.toString()})');
+      expect(transport.calls, ['failed (${error.toString()})']);
     });
 
-    test('does not call log below threshold', () async {
-      int callCount = 0;
-
-      final transport = CrashlyticsTransport(
-        level: LogLevel.error,
-        logOverride: (msg) async {
-          callCount++;
-        },
-      );
+    test('does not call dispatchLog below threshold', () async {
+      final transport = _FakeCrashlyticsTransport(level: LogLevel.error);
 
       await transport.log(LogEvent(level: LogLevel.info, message: 'ignored'));
 
-      expect(callCount, 0);
+      expect(transport.calls, isEmpty);
     });
 
-    test('calls log at or above threshold', () async {
-      int callCount = 0;
-
-      final transport = CrashlyticsTransport(
-        level: LogLevel.warn,
-        logOverride: (msg) async {
-          callCount++;
-        },
-      );
+    test('calls dispatchLog at or above threshold', () async {
+      final transport = _FakeCrashlyticsTransport(level: LogLevel.warn);
 
       await transport.log(LogEvent(level: LogLevel.warn, message: 'warn'));
       await transport.log(LogEvent(level: LogLevel.error, message: 'error'));
 
-      expect(callCount, 2);
+      expect(transport.calls, hasLength(2));
     });
   });
 }
