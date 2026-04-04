@@ -26,4 +26,3 @@ flutter:
       android:
         package: io.kumo01.revere
         pluginClass: AndroidLogTransportPlugin
-        dartPluginClass: AndroidLogTransport
