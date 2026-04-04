@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:revere/core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
@@ -5,7 +6,10 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 class CrashlyticsTransport extends Transport {
   final String format;
 
-  CrashlyticsTransport({super.level, super.config})
+  @visibleForTesting
+  final Future<void> Function(String message)? logOverride;
+
+  CrashlyticsTransport({super.level, super.config, this.logOverride})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}';
 
@@ -18,6 +22,10 @@ class CrashlyticsTransport extends Transport {
         .replaceAll('{context}', event.context ?? '')
         .replaceAll('{error}', event.error?.toString() ?? '')
         .replaceAll('{stackTrace}', event.stackTrace?.toString() ?? '');
-    await FirebaseCrashlytics.instance.log(msg);
+    if (logOverride != null) {
+      await logOverride!(msg);
+    } else {
+      await FirebaseCrashlytics.instance.log(msg);
+    }
   }
 }
