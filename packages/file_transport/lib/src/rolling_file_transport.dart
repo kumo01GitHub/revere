@@ -73,7 +73,8 @@ class RollingFileTransport extends Transport {
     final ctx = event.context != null ? ' [${event.context}]' : '';
     final err = event.error != null ? ' error: ${event.error}' : '';
     final stack = event.stackTrace != null ? '\n${event.stackTrace}' : '';
-    final line = '[$ts] [${event.level.name}] ${event.message}$err$stack$ctx';
+    final line =
+        '[$ts] [${event.level.name}] ${event.message.toString()}$err$stack$ctx';
     await rollingFile.write(line);
   }
 }

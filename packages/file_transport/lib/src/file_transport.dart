@@ -33,6 +33,6 @@ class FileTransport extends Transport {
     final ctx = event.context != null ? ' [${event.context}]' : '';
     final err = event.error != null ? ' error: ${event.error}' : '';
     final stack = event.stackTrace != null ? '\n${event.stackTrace}' : '';
-    return '[$ts] [${event.level.name}] ${event.message}$err$stack$ctx';
+    return '[$ts] [${event.level.name}] ${event.message.toString()}$err$stack$ctx';
   }
 }
