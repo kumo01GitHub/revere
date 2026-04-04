@@ -2,69 +2,43 @@ import 'dart:async' show unawaited;
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
-import 'package:revere/core.dart';
-import 'firebase_transport.dart';
 
-/// Mixin that adds action tracking (→ Firebase Analytics) and error reporting
-/// (→ Firebase Crashlytics) to any class via a [Logger] backed by
-/// [FirebaseTransport].
+import 'log_level.dart';
+import 'logger.dart';
+
+/// Mixin that adds automatic error logging to any class via a [Logger].
 ///
-/// The default transport and logger are shared singletons. Override
-/// [firebaseTransport] and [logger] together to inject custom instances.
+/// The default logger is a shared singleton. Override [logger] to inject a
+/// custom or pre-configured instance from the application layer.
 ///
 /// Example:
 /// ```dart
-/// class CheckoutService with FirebaseTrackerMixin {
+/// class CheckoutService with ErrorTrackerMixin {
 ///   @override
-///   FirebaseTransport get firebaseTransport => _myTransport;
-///   @override
-///   Logger get logger => Logger([_myTransport]);
+///   Logger get logger => MyApp.logger;
 ///
 ///   Future<void> purchase(Item item) {
-///     return withTracking(
-///       'purchase',
-///       () async { /* ... */ },
-///       params: {'item_id': item.id},
-///     );
+///     return guarded(() async {
+///       // any error here is automatically logged
+///       await _api.purchase(item);
+///     });
 ///   }
 /// }
 /// ```
-mixin FirebaseTrackerMixin {
-  static final FirebaseTransport _defaultTransport = FirebaseTransport();
-  static final Logger _defaultLogger = Logger([_defaultTransport]);
+mixin ErrorTrackerMixin {
+  static final Logger _defaultLogger = Logger();
 
-  /// The [FirebaseTransport] backing the default [logger].
+  /// The [Logger] used for all error tracking calls.
   ///
-  /// Override to provide a custom instance. When overriding, also override
-  /// [logger] to keep them in sync.
-  FirebaseTransport get firebaseTransport => _defaultTransport;
-
-  /// The [Logger] used for all tracking calls.
-  ///
-  /// Override to provide a custom instance (e.g. with a different transport).
+  /// Override to provide a custom instance configured by the application.
   Logger get logger => _defaultLogger;
 
   /// Context label embedded in log events. Defaults to the runtime type name.
   String get trackerContext => runtimeType.toString();
 
-  /// Records a user action to Firebase Analytics.
+  /// Records an error to [logger].
   ///
-  /// [action] becomes the log message. [params] are appended to the message
-  /// as `key=value` pairs (Analytics parameters are currently carried via the
-  /// message string; extend [FirebaseTransport] if you need structured params).
-  Future<void> trackAction(
-    String action, {
-    Map<String, dynamic>? params,
-  }) {
-    final String message = (params != null && params.isNotEmpty)
-        ? '$action: ${params.entries.map((e) => '${e.key}=${e.value}').join(', ')}'
-        : action;
-    return logger.info(message, context: trackerContext);
-  }
-
-  /// Records an error to Firebase Crashlytics (via [logger]).
-  ///
-  /// Set [fatal] to `true` to mark the event as a fatal crash.
+  /// Set [fatal] to `true` to mark the event at [LogLevel.fatal].
   Future<void> trackError(
     Object error, {
     StackTrace? stackTrace,
@@ -80,16 +54,21 @@ mixin FirebaseTrackerMixin {
     );
   }
 
-  /// Runs [body], logging [action] on entry.
+  /// Runs [body], logging [action] at [LogLevel.info] on entry.
   ///
   /// If [body] throws, the exception is recorded via [trackError] and
   /// re-thrown so the caller can still handle it.
+  ///
+  /// Optional [params] are appended to the log message as `key=value` pairs.
   Future<T> withTracking<T>(
     String action,
     Future<T> Function() body, {
     Map<String, dynamic>? params,
   }) async {
-    await trackAction(action, params: params);
+    final String message = (params != null && params.isNotEmpty)
+        ? '$action: ${params.entries.map((e) => '${e.key}=${e.value}').join(', ')}'
+        : action;
+    await logger.info(message, context: trackerContext);
     try {
       return await body();
     } catch (e, st) {
@@ -98,7 +77,7 @@ mixin FirebaseTrackerMixin {
     }
   }
 
-  /// Runs [body] and automatically records any thrown error to Crashlytics.
+  /// Runs [body] and automatically logs any thrown error.
   ///
   /// Simpler than [withTracking] — no action name is required. Use this when
   /// you only need error protection without action logging.
@@ -111,10 +90,7 @@ mixin FirebaseTrackerMixin {
   /// ```
   ///
   /// The error is re-thrown after recording so the caller can still handle it.
-  Future<T> guarded<T>(
-    Future<T> Function() body, {
-    bool fatal = false,
-  }) async {
+  Future<T> guarded<T>(Future<T> Function() body, {bool fatal = false}) async {
     try {
       return await body();
     } catch (e, st) {
@@ -124,7 +100,7 @@ mixin FirebaseTrackerMixin {
   }
 
   /// Installs global Flutter error handlers that forward all uncaught errors
-  /// to Firebase Crashlytics via [firebaseTransport].
+  /// to [logger].
   ///
   /// Call this once in `main()` after `WidgetsFlutterBinding.ensureInitialized()`:
   ///
@@ -145,20 +121,19 @@ mixin FirebaseTrackerMixin {
     final prevFlutter = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
       prevFlutter?.call(details);
-      unawaited(trackError(
-        details.exception,
-        stackTrace: details.stack,
-        message: details.exceptionAsString(),
-      ));
+      unawaited(
+        trackError(
+          details.exception,
+          stackTrace: details.stack,
+          message: details.exceptionAsString(),
+        ),
+      );
     };
 
     final prevPlatform = PlatformDispatcher.instance.onError;
     PlatformDispatcher.instance.onError = (error, stack) {
       prevPlatform?.call(error, stack);
       unawaited(trackError(error, stackTrace: stack, fatal: true));
-      // Return false so the runtime still treats this as unhandled and
-      // terminates / reports the crash normally. Returning true would
-      // suppress the crash and swallow the error.
       return false;
     };
   }
