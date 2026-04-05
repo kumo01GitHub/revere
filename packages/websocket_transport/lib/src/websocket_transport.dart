@@ -105,13 +105,13 @@ class WebSocketTransport extends Transport {
   }
 
   String _serialize(LogEvent event) => jsonEncode({
-    'level': event.level.name,
-    'message': event.message.toString(),
-    'timestamp': event.timestamp.toIso8601String(),
-    if (event.context != null) 'context': event.context,
-    if (event.error != null) 'error': event.error.toString(),
-    if (event.stackTrace != null) 'stackTrace': event.stackTrace.toString(),
-  });
+        'level': event.level.name,
+        'message': event.message.toString(),
+        'timestamp': event.timestamp.toIso8601String(),
+        if (event.context != null) 'context': event.context,
+        if (event.error != null) 'error': event.error.toString(),
+        if (event.stackTrace != null) 'stackTrace': event.stackTrace.toString(),
+      });
 
   /// Closes the WebSocket connection.
   ///
@@ -123,5 +123,6 @@ class WebSocketTransport extends Transport {
   }
 
   /// Creates the underlying [WebSocket]. Override in tests to inject a fake.
-  Future<WebSocket> createWebSocket(String url) => WebSocket.connect(url); // coverage:ignore-line
+  Future<WebSocket> createWebSocket(String url) =>
+      WebSocket.connect(url); // coverage:ignore-line
 }
