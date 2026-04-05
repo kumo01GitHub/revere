@@ -8,10 +8,10 @@ Pod::Spec.new do |s|
     Falls back to NSLog when built with CocoaPods.
   DESC
   s.homepage         = 'https://github.com/kumo01GitHub/revere'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :file => '../../LICENSE' }
   s.author           = { 'kumo01GitHub' => 'kumo01GitHub' }
   s.source           = { :path => '.' }
-  s.source_files     = 'darwin/swift_log_transport/Sources/swift_log_transport/*.swift'
+  s.source_files     = 'swift_log_transport/Sources/swift_log_transport/*.swift'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '12.0'
