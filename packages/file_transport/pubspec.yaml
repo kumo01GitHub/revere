@@ -1,6 +1,6 @@
 name: file_transport
 description: File and rolling file transport for revere logger.
-version: 0.0.6
+version: 0.0.7
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/tree/main/packages/file_transport
@@ -10,7 +10,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  revere: ^0.0.6
+  revere: ^0.0.7
 
 dev_dependencies:
   flutter_test:
