@@ -12,16 +12,6 @@ Closes #
 - [ ] Documentation update
 - [ ] Other:
 
-## Affected Packages
-<!-- Check all that apply. -->
-- [ ] core
-- [ ] file_transport
-- [ ] firebase_transport
-- [ ] android_log_transport
-- [ ] swift_log_transport
-- [ ] notification_transport
-- [ ] Other:
-
 ## Changes
 <!-- List the key changes made in this PR. -->
 -

@@ -5,6 +5,7 @@
 * ci: pin dart-lang/setup-dart to commit hash instead of mutable v1 tag.
 * chore: update example pubspec.lock.
 * chore: improve test coverage.
+* chore: remove affected packages checklist from PR template.
 
 ## 1.0.0
 
