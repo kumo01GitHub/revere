@@ -42,14 +42,14 @@ await logger.info('Hello!');
 
 ## Packages
 
-| Package | Version | Pub Points | Role |
-|---|---|---|---|
-| `revere` | [![pub package](https://img.shields.io/pub/v/revere.svg)](https://pub.dev/packages/revere) | [![pub points](https://img.shields.io/pub/points/revere)](https://pub.dev/packages/revere/score) | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
-| `file_transport` | [![pub package](https://img.shields.io/pub/v/file_transport.svg)](https://pub.dev/packages/file_transport) | [![pub points](https://img.shields.io/pub/points/file_transport)](https://pub.dev/packages/file_transport/score) | File output and rolling file output |
-| `firebase_transport` | [![pub package](https://img.shields.io/pub/v/firebase_transport.svg)](https://pub.dev/packages/firebase_transport) | [![pub points](https://img.shields.io/pub/points/firebase_transport)](https://pub.dev/packages/firebase_transport/score) | Firebase Analytics and Crashlytics transports |
-| `android_log_transport` | [![pub package](https://img.shields.io/pub/v/android_log_transport.svg)](https://pub.dev/packages/android_log_transport) | [![pub points](https://img.shields.io/pub/points/android_log_transport)](https://pub.dev/packages/android_log_transport/score) | Android Logcat transport |
-| `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) | [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
-| `swift_log_transport` | [![pub package](https://img.shields.io/pub/v/swift_log_transport.svg)](https://pub.dev/packages/swift_log_transport) | [![pub points](https://img.shields.io/pub/points/swift_log_transport)](https://pub.dev/packages/swift_log_transport/score) | Apple swift-log transport for iOS/macOS |
+| Package | Status | Role |
+|---|---|---|
+| `revere` | [![pub package](https://img.shields.io/pub/v/revere.svg)](https://pub.dev/packages/revere) [![pub points](https://img.shields.io/pub/points/revere)](https://pub.dev/packages/revere/score) | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
+| `file_transport` | [![pub package](https://img.shields.io/pub/v/file_transport.svg)](https://pub.dev/packages/file_transport) [![pub points](https://img.shields.io/pub/points/file_transport)](https://pub.dev/packages/file_transport/score) | File output and rolling file output |
+| `firebase_transport` | [![pub package](https://img.shields.io/pub/v/firebase_transport.svg)](https://pub.dev/packages/firebase_transport) [![pub points](https://img.shields.io/pub/points/firebase_transport)](https://pub.dev/packages/firebase_transport/score) | Firebase Analytics and Crashlytics transports |
+| `android_log_transport` | [![pub package](https://img.shields.io/pub/v/android_log_transport.svg)](https://pub.dev/packages/android_log_transport) [![pub points](https://img.shields.io/pub/points/android_log_transport)](https://pub.dev/packages/android_log_transport/score) | Android Logcat transport |
+| `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
+| `swift_log_transport` | [![pub package](https://img.shields.io/pub/v/swift_log_transport.svg)](https://pub.dev/packages/swift_log_transport) [![pub points](https://img.shields.io/pub/points/swift_log_transport)](https://pub.dev/packages/swift_log_transport/score) | Apple swift-log transport for iOS/macOS |
 
 ## Directory Structure
 
