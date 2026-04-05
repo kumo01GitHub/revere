@@ -1,6 +1,6 @@
 name: file_transport
 description: File and rolling file transport for revere logger.
-version: 0.0.7
+version: 1.0.0
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/tree/main/packages/file_transport
