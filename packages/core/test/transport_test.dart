@@ -121,6 +121,13 @@ void main() {
       expect(events.any((e) => e.level == LogLevel.info), isFalse);
       expect(events.any((e) => e.level == LogLevel.error), isTrue);
     });
+    test('log throws ArgumentError when level is silent', () async {
+      final logger = Logger();
+      expect(
+        () => logger.log(LogLevel.silent, 'msg'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 }
 
