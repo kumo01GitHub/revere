@@ -1,15 +1,8 @@
 # Revere Logger
 
-Revere is a modular logging monorepo for Dart/Flutter applications.
-It provides a core logger and multiple optional transport packages so you can route logs to different destinations with a consistent API.
+Revere is a modular logging package for Dart/Flutter. Plug in only the transports you need — console, file, Firebase, notifications, and more — and get consistent log routing across mobile, desktop, and server with a single API.
 
-Compared to other Dart/Flutter logger options, Revere is designed for practical production use with:
-
-- **Diverse transports**: Freely combine and extend outputs such as console, file, Firebase, Android, notifications, and Swift.
-- **Multi-platform coverage**: Keep a consistent logging model across Dart/Flutter, Android, iOS (Swift), and Firebase.
-- **Extensibility and customization**: Add custom transports and control log levels/formats per transport.
-- **Production-ready capabilities**: Use features such as file rotation, Crashlytics integration, and notification delivery.
-- **Modular package design**: Adopt only what you need to keep dependencies and binary size lean.
+Ideal if you want a logger that's ready to use in minutes, stays lean by including only the transports you need, and already covers the practical production scenarios — file rotation, Crashlytics, native platform logging, and more — without extra glue code.
 
 ## Design Philosophy
 
