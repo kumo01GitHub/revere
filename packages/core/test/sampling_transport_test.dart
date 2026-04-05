@@ -7,7 +7,7 @@ import 'package:revere/sampling_transport.dart';
 class _CollectingTransport extends Transport {
   final List<LogEvent> received = [];
 
-  _CollectingTransport({super.level = LogLevel.trace});
+  _CollectingTransport();
 
   @override
   Future<void> emitLog(LogEvent event) async => received.add(event);
