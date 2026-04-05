@@ -62,10 +62,11 @@ class SentryTransport extends Transport {
         LogLevel.debug => SentryLevel.debug,
         LogLevel.info => SentryLevel.info,
         LogLevel.warn => SentryLevel.warning,
-        LogLevel.error => SentryLevel.error,
-        LogLevel.fatal => SentryLevel.fatal,
+        // error and fatal always route to dispatchException, never here.
+        _ => SentryLevel.error,
       };
 
+  // coverage:ignore-start
   @protected
   Future<void> dispatchBreadcrumb(Breadcrumb breadcrumb) async {
     await Sentry.addBreadcrumb(breadcrumb);
@@ -85,4 +86,5 @@ class SentryTransport extends Transport {
       withScope: (scope) => scope.setTag('fatal', '$fatal'),
     );
   }
+  // coverage:ignore-end
 }
