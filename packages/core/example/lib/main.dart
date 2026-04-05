@@ -1,68 +1,116 @@
 import 'package:flutter/material.dart';
 import 'package:revere/core.dart';
-import 'package:revere/buffered_transport.dart';
-import 'package:revere/console_transport.dart';
 import 'package:revere/pretty_console_transport.dart';
 
-// ---------------------------------------------------------------------------
-// LoggerMixin example — a simple service that logs its own actions
-// ---------------------------------------------------------------------------
-class CounterService with LoggerMixin {
-  int _count = 0;
+// ===========================================================================
+// Example 1: LoggerMixin
+//
+// Mix LoggerMixin into any class to get concise, context-aware logging.
+// The class name is automatically attached as the log context.
+// Override loggerContext to customise the label.
+// ===========================================================================
+class UserRepository with LoggerMixin {
+  final _users = <String>['alice', 'bob', 'carol'];
 
-  int get count => _count;
+  @override
+  String get loggerContext => 'UserRepository';
 
-  Future<void> increment() async {
-    _count++;
-    await i('Counter incremented to $_count');
+  Future<List<String>> fetchAll() async {
+    await d('Fetching all users');
+    await Future.delayed(const Duration(milliseconds: 100));
+    await i('Fetched ${_users.length} users');
+    return List.unmodifiable(_users);
   }
 
-  Future<void> reset() async {
-    _count = 0;
-    await w('Counter reset to 0');
-  }
-
-  /// Simulates a failure and logs it at error level.
-  Future<void> simulateError() async {
-    try {
-      throw StateError('Something went wrong in CounterService');
-    } catch (err, st) {
-      await e('Operation failed', error: err, stackTrace: st);
-      rethrow;
+  Future<void> addUser(String name) async {
+    if (name.isEmpty) {
+      await w('addUser called with empty name — skipping');
+      return;
     }
+    _users.add(name);
+    await i('User added: $name');
+  }
+
+  Future<void> deleteUser(String name) async {
+    if (!_users.contains(name)) {
+      await e(
+        'deleteUser: user not found: $name',
+        error: ArgumentError('unknown user: $name'),
+      );
+      return;
+    }
+    _users.remove(name);
+    await i('User deleted: $name');
   }
 }
 
-// ---------------------------------------------------------------------------
-// App setup — configure the shared logger used by LoggerMixin
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// Example 2: ErrorTrackerMixin
+//
+// ErrorTrackerMixin adds trackError, withTracking, guarded, and
+// setupFlutterErrorTracking for global Flutter/Dart error capture.
+// ===========================================================================
+class PaymentService with ErrorTrackerMixin {
+  // Share the same logger as LoggerMixin rather than using a separate instance.
+  @override
+  Logger get logger => LoggerMixin.logger;
+
+  @override
+  String get trackerContext => 'PaymentService';
+
+  /// withTracking: logs action entry at info level, records any thrown error.
+  Future<void> purchase(String itemId, double price) => withTracking(
+        'purchase',
+        () async {
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (price <= 0) throw ArgumentError('price must be positive');
+        },
+        params: {'item_id': itemId, 'price': price},
+      );
+
+  /// guarded: wraps body in try/catch; records error and re-throws.
+  Future<void> refund(String orderId) => guarded(() async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        throw StateError('refund service unavailable for order $orderId');
+      });
+
+  /// trackError: records an arbitrary caught error directly.
+  Future<void> reportManualError() => trackError(
+        Exception('manual payment error'),
+        stackTrace: StackTrace.current,
+        message: 'Manually reported payment error',
+      );
+}
+
+// ===========================================================================
+// App entry-point
+// ===========================================================================
 void main() {
-  // PrettyConsoleTransport logs everything from trace upward
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Single PrettyConsoleTransport — sufficient for this demo.
   LoggerMixin.logger.addTransport(
     PrettyConsoleTransport(level: LogLevel.trace),
   );
 
-  // BufferedTransport wraps a second ConsoleTransport and flushes every 5 s
-  LoggerMixin.logger.addTransport(
-    ConsoleTransport(level: LogLevel.warn).withBuffer(
-      maxSize: 10,
-      flushInterval: const Duration(seconds: 5),
-    ),
-  );
+  // setupFlutterErrorTracking installs FlutterError.onError and
+  // PlatformDispatcher.instance.onError so uncaught errors are automatically
+  // recorded. Call this once after WidgetsFlutterBinding.ensureInitialized().
+  PaymentService().setupFlutterErrorTracking();
 
   runApp(const RevereExampleApp());
 }
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // UI
-// ---------------------------------------------------------------------------
+// ===========================================================================
 class RevereExampleApp extends StatelessWidget {
   const RevereExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Revere Example',
+      title: 'Revere Core Example',
       theme: ThemeData(colorSchemeSeed: Colors.indigo),
       home: const ExamplePage(),
     );
@@ -76,106 +124,205 @@ class ExamplePage extends StatefulWidget {
   State<ExamplePage> createState() => _ExamplePageState();
 }
 
-class _ExamplePageState extends State<ExamplePage> {
-  final _service = CounterService();
-  String _status = 'Tap a button — watch the console for log output.';
+class _ExamplePageState extends State<ExamplePage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabs;
 
-  Future<void> _run(Future<void> Function() action, String label) async {
-    try {
-      await action();
-      if (mounted) setState(() => _status = '$label → see console');
-    } catch (_) {
-      if (mounted) {
-        setState(() => _status = '$label → error logged (see console)');
-      }
-    }
+  @override
+  void initState() {
+    super.initState();
+    _tabs = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Revere Core Example')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Counter: ${_service.count}',
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(_status, textAlign: TextAlign.center),
-            const SizedBox(height: 32),
-            _Section(title: 'LoggerMixin', children: [
-              _LogButton(
-                label: 'Increment (info)',
-                onPressed: () => _run(_service.increment, 'increment'),
-              ),
-              _LogButton(
-                label: 'Reset (warn)',
-                onPressed: () => _run(_service.reset, 'reset'),
-              ),
-              _LogButton(
-                label: 'Simulate error',
-                onPressed: () => _run(_service.simulateError, 'simulateError'),
-              ),
-            ]),
-            const SizedBox(height: 24),
-            _Section(title: 'Direct Logger', children: [
-              _LogButton(
-                label: 'logger.trace()',
-                onPressed: () => _run(
-                  () => LoggerMixin.logger
-                      .trace('trace message', context: 'ExamplePage'),
-                  'trace',
-                ),
-              ),
-              _LogButton(
-                label: 'logger.debug()',
-                onPressed: () => _run(
-                  () => LoggerMixin.logger
-                      .debug('debug message', context: 'ExamplePage'),
-                  'debug',
-                ),
-              ),
-              _LogButton(
-                label: 'logger.fatal()',
-                onPressed: () => _run(
-                  () => LoggerMixin.logger
-                      .fatal('fatal message', context: 'ExamplePage'),
-                  'fatal',
-                ),
-              ),
-            ]),
+      appBar: AppBar(
+        title: const Text('Revere Core Example'),
+        bottom: TabBar(
+          controller: _tabs,
+          tabs: const [
+            Tab(text: 'LoggerMixin'),
+            Tab(text: 'ErrorTrackerMixin'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabs,
+        children: const [
+          _LoggerMixinTab(),
+          _ErrorTrackerTab(),
+        ],
       ),
     );
   }
 }
 
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.children});
-  final String title;
-  final List<Widget> children;
+// ---------------------------------------------------------------------------
+// Tab 1: LoggerMixin
+// ---------------------------------------------------------------------------
+class _LoggerMixinTab extends StatefulWidget {
+  const _LoggerMixinTab();
+
+  @override
+  State<_LoggerMixinTab> createState() => _LoggerMixinTabState();
+}
+
+class _LoggerMixinTabState extends State<_LoggerMixinTab> {
+  final _repo = UserRepository();
+  String _status = '';
+
+  Future<void> _run(Future<void> Function() fn, String label) async {
+    try {
+      await fn();
+      if (mounted) setState(() => _status = '$label → OK (see console)');
+    } catch (_) {
+      if (mounted) setState(() => _status = '$label → error (see console)');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return _TabBody(
+      description:
+          'LoggerMixin provides shorthand methods d/i/w/e/f/t that auto-attach '
+          'the class name as the log context. Override loggerContext for a '
+          'custom label.',
+      status: _status,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        ...children,
+        _ActionButton(
+          label: 'fetchAll()  →  d() + i()',
+          onPressed: () => _run(_repo.fetchAll, 'fetchAll'),
+        ),
+        _ActionButton(
+          label: 'addUser("")  →  w()',
+          onPressed: () => _run(() => _repo.addUser(''), 'addUser empty'),
+        ),
+        _ActionButton(
+          label: 'addUser("dave")  →  i()',
+          onPressed: () => _run(() => _repo.addUser('dave'), 'addUser'),
+        ),
+        _ActionButton(
+          label: 'deleteUser("nobody")  →  e()',
+          onPressed: () =>
+              _run(() => _repo.deleteUser('nobody'), 'deleteUser unknown'),
+        ),
+        _ActionButton(
+          label: 'deleteUser("alice")  →  i()',
+          onPressed: () =>
+              _run(() => _repo.deleteUser('alice'), 'deleteUser'),
+        ),
       ],
     );
   }
 }
 
-class _LogButton extends StatelessWidget {
-  const _LogButton({required this.label, required this.onPressed});
+// ---------------------------------------------------------------------------
+// Tab 2: ErrorTrackerMixin
+// ---------------------------------------------------------------------------
+class _ErrorTrackerTab extends StatefulWidget {
+  const _ErrorTrackerTab();
+
+  @override
+  State<_ErrorTrackerTab> createState() => _ErrorTrackerTabState();
+}
+
+class _ErrorTrackerTabState extends State<_ErrorTrackerTab> {
+  final _svc = PaymentService();
+  String _status = '';
+
+  Future<void> _run(Future<void> Function() fn, String label) async {
+    try {
+      await fn();
+      if (mounted) setState(() => _status = '$label → OK (see console)');
+    } catch (_) {
+      if (mounted) setState(() => _status = '$label → error (see console)');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _TabBody(
+      description:
+          'ErrorTrackerMixin adds withTracking (action + error logging), '
+          'guarded (error-only), trackError (manual), and '
+          'setupFlutterErrorTracking (global handlers).',
+      status: _status,
+      children: [
+        _ActionButton(
+          label: 'withTracking  →  purchase ok',
+          onPressed: () =>
+              _run(() => _svc.purchase('item_001', 9.99), 'purchase ok'),
+        ),
+        _ActionButton(
+          label: 'withTracking  →  purchase error (price ≤ 0)',
+          onPressed: () =>
+              _run(() => _svc.purchase('item_002', -1), 'purchase error'),
+        ),
+        _ActionButton(
+          label: 'guarded  →  refund (always throws)',
+          onPressed: () => _run(() => _svc.refund('order_123'), 'refund'),
+        ),
+        _ActionButton(
+          label: 'trackError  →  manual report',
+          onPressed: () => _run(_svc.reportManualError, 'trackError'),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared widgets
+// ---------------------------------------------------------------------------
+class _TabBody extends StatelessWidget {
+  const _TabBody({
+    required this.description,
+    required this.children,
+    required this.status,
+  });
+
+  final String description;
+  final List<Widget> children;
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(description, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 4),
+          Text(
+            'Watch the debug console for output.',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: Colors.grey),
+          ),
+          const Divider(height: 32),
+          ...children,
+          if (status.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(status, textAlign: TextAlign.center),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({required this.label, required this.onPressed});
+
   final String label;
   final VoidCallback onPressed;
 
