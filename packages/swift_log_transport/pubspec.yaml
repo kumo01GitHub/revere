@@ -3,7 +3,7 @@ description: SwiftLog (Apple swift-log) transport for revere logger (via platfor
 version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
-repository: https://github.com/kumo01GitHub/revere/packages/swift_log_transport
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/swift_log_transport
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

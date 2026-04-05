@@ -4,11 +4,23 @@ import 'android_log_transport_platform_interface.dart';
 
 /// Forwards log events to Android's Logcat via a platform channel.
 ///
-/// config keys: `tag` (String), `format` (String).
+/// Use the standard `adb logcat` command to view output. Each event is sent
+/// with the Android log priority that matches the [LogLevel].
+///
+/// config keys:
+/// - `tag` (String): Logcat tag. Defaults to `null` (platform uses app name).
+/// - `format` (String): message template; supports `{level}`, `{message}`,
+///   `{timestamp}`, `{error}`, `{stackTrace}`, `{context}`.
 class AndroidLogTransport extends Transport {
+  /// Optional Logcat tag. When `null` the platform falls back to the app name.
   final String? tag;
+
+  /// Message template applied to each event before sending to Logcat.
   final String format;
 
+  /// Creates an [AndroidLogTransport].
+  ///
+  /// Options are read from [config] when available.
   AndroidLogTransport({super.level, super.config})
       : tag = config['tag'] as String?,
         format = (config['format'] as String?) ?? '{message}';

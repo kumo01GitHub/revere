@@ -10,9 +10,16 @@ import '../utils/ansi_color.dart';
 ///   `{timestamp}`, `{error}`, `{stackTrace}`, `{context}`.
 /// - `colorize` (bool): wrap output in ANSI colors (default `true`).
 class ConsoleTransport extends Transport {
+  /// Log line template. Supports `{level}`, `{message}`, `{timestamp}`,
+  /// `{error}`, `{stackTrace}`, `{context}` placeholders.
   final String format;
+
+  /// Whether to wrap output in ANSI colors. Defaults to `true`.
   final bool colorize;
 
+  /// Creates a [ConsoleTransport].
+  ///
+  /// Reads `format` and `colorize` from [config] when available.
   ConsoleTransport({super.level, super.config})
     : format =
           (config['format'] as String?) ??

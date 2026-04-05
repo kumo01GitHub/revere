@@ -1,5 +1,11 @@
 # Revere Logger
 
+[![CI](https://github.com/kumo01GitHub/revere/actions/workflows/ci.yml/badge.svg)](https://github.com/kumo01GitHub/revere/actions/workflows/ci.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cff5937f521e4cd684bb435f410fd202)](https://app.codacy.com/gh/kumo01GitHub/revere/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/cff5937f521e4cd684bb435f410fd202)](https://app.codacy.com/gh/kumo01GitHub/revere/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/kumo01GitHub/revere/pulls)
+
 Revere is a modular logging package for Dart/Flutter. Plug in only the transports you need — console, file, Firebase, notifications, and more — and get consistent log routing across mobile, desktop, and server with a single API.
 
 Ideal if you want a logger that's ready to use in minutes, stays lean by including only the transports you need, and already covers the practical production scenarios — file rotation, Crashlytics, native platform logging, and more — without extra glue code.
@@ -36,14 +42,14 @@ await logger.info('Hello!');
 
 ## Packages
 
-| Package | Role |
-|---|---|
-| `core` | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
-| `file_transport` | File output and rolling file output |
-| `firebase_transport` | Firebase Analytics and Crashlytics transports |
-| `android_log_transport` | Android Logcat transport |
-| `notification_transport` | Local notification transport (mobile/desktop) |
-| `swift_log_transport` | Apple swift-log transport for iOS/macOS |
+| Package | Version | Pub Points | Role |
+|---|---|---|---|
+| `revere` | [![pub package](https://img.shields.io/pub/v/revere.svg)](https://pub.dev/packages/revere) | [![pub points](https://img.shields.io/pub/points/revere)](https://pub.dev/packages/revere/score) | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
+| `file_transport` | [![pub package](https://img.shields.io/pub/v/file_transport.svg)](https://pub.dev/packages/file_transport) | [![pub points](https://img.shields.io/pub/points/file_transport)](https://pub.dev/packages/file_transport/score) | File output and rolling file output |
+| `firebase_transport` | [![pub package](https://img.shields.io/pub/v/firebase_transport.svg)](https://pub.dev/packages/firebase_transport) | [![pub points](https://img.shields.io/pub/points/firebase_transport)](https://pub.dev/packages/firebase_transport/score) | Firebase Analytics and Crashlytics transports |
+| `android_log_transport` | [![pub package](https://img.shields.io/pub/v/android_log_transport.svg)](https://pub.dev/packages/android_log_transport) | [![pub points](https://img.shields.io/pub/points/android_log_transport)](https://pub.dev/packages/android_log_transport/score) | Android Logcat transport |
+| `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) | [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
+| `swift_log_transport` | [![pub package](https://img.shields.io/pub/v/swift_log_transport.svg)](https://pub.dev/packages/swift_log_transport) | [![pub points](https://img.shields.io/pub/points/swift_log_transport)](https://pub.dev/packages/swift_log_transport/score) | Apple swift-log transport for iOS/macOS |
 
 ## Directory Structure
 

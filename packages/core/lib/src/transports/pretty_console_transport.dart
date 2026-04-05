@@ -22,11 +22,21 @@ import '../utils/ansi_color.dart';
 /// - `showContext` (bool): include the context label (default `true`).
 /// - `showStackTrace` (bool): print stack traces when present (default `true`).
 class PrettyConsoleTransport extends Transport {
+  /// Whether to wrap output in ANSI colors. Defaults to `true`.
   final bool colorize;
+
+  /// Whether to include an `HH:mm:ss.SSS` timestamp prefix. Defaults to `true`.
   final bool showTimestamp;
+
+  /// Whether to include the context label. Defaults to `true`.
   final bool showContext;
+
+  /// Whether to print stack traces when present. Defaults to `true`.
   final bool showStackTrace;
 
+  /// Creates a [PrettyConsoleTransport].
+  ///
+  /// All options are read from [config] when available.
   PrettyConsoleTransport({super.level, super.config})
     : colorize = (config['colorize'] as bool?) ?? true,
       showTimestamp = (config['showTimestamp'] as bool?) ?? true,

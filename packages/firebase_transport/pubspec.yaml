@@ -3,7 +3,7 @@ description: Firebase Crashlytics/Analytics transport for revere logger.
 version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
-repository: https://github.com/kumo01GitHub/revere/packages/firebase_transport
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/firebase_transport
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

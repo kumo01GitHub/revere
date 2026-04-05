@@ -6,8 +6,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 ///
 /// config keys: `format` (String).
 class CrashlyticsTransport extends Transport {
+  /// Log message template. Supports `{level}`, `{message}`, `{timestamp}`,
+  /// `{context}`, `{error}`, `{stackTrace}` placeholders.
   final String format;
 
+  /// Creates a [CrashlyticsTransport].
+  ///
+  /// `format` may be customised via [config].
   CrashlyticsTransport({super.level, super.config})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}';

@@ -4,10 +4,18 @@ import 'package:revere/core.dart';
 
 /// Writes logs to a single file (append-only).
 ///
+/// Each log event is written as a single line: `[ISO8601] [level] message [context]`.
+/// Errors and stack traces are appended inline.
+///
 /// See [RollingFileTransport] for size-based rotation.
 class FileTransport extends Transport {
+  /// Absolute path to the log file.
   final String filePath;
 
+  /// Creates a [FileTransport] that writes to [filePath].
+  ///
+  /// [filePath] may also be provided via `config['filePath']`.
+  /// Throws [ArgumentError] if neither is supplied.
   FileTransport(
     String? filePath, {
     super.level,

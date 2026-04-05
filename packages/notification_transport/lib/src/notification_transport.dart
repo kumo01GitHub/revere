@@ -24,12 +24,26 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 /// - `windowsAppName`, `windowsAppUserModelId`, `windowsGuid` (String, required
 ///   for Windows), `windowsIconPath` (String), `windowsSubtitle` (String).
 class NotificationTransport extends Transport {
+  /// Underlying plugin instance used to show notifications.
   final FlutterLocalNotificationsPlugin _plugin;
+
+  /// Body template. Supports `{level}`, `{message}`, `{timestamp}`,
+  /// `{error}`, `{stackTrace}`, `{context}` placeholders.
   final String format;
+
+  /// Title template. Supports `{level}` and `{context}` placeholders.
   final String title;
+
   final String? _groupKey;
+
+  /// Optional callback invoked when the user taps a notification.
   final DidReceiveNotificationResponseCallback? onNotificationResponse;
 
+  /// Creates a [NotificationTransport].
+  ///
+  /// When [plugin] is omitted, a new [FlutterLocalNotificationsPlugin] is
+  /// created and initialized using [config] values. Provide [plugin] when
+  /// you need to share an already-initialized instance.
   NotificationTransport({
     super.level,
     super.config,

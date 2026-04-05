@@ -21,10 +21,20 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 /// | `format` | String | Message body template. Default `'[{level}:{context}] {message}'`. |
 /// | `callOptions` | AnalyticsCallOptions | Forwarded to Analytics. |
 class FirebaseTransport extends Transport {
+  /// Log message body template. Supports `{level}`, `{message}`, `{timestamp}`,
+  /// `{context}`, `{error}`, `{stackTrace}` placeholders.
   final String format;
+
+  /// Analytics event name template. Supports `{context}` and `{level}`.
+  /// Defaults to `'revere'`.
   final String name;
+
+  /// Optional [AnalyticsCallOptions] forwarded to Firebase Analytics.
   final AnalyticsCallOptions? callOptions;
 
+  /// Creates a [FirebaseTransport].
+  ///
+  /// Options are read from [config] when available.
   FirebaseTransport({super.level, super.config})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}',

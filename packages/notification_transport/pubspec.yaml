@@ -3,7 +3,7 @@ description: "Notification transport for revere logger (via flutter_local_notifi
 version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
-repository: https://github.com/kumo01GitHub/revere/packages/notification_transport
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/notification_transport
 
 environment:
   sdk: ^3.11.4

@@ -3,9 +3,17 @@ import 'dart:io';
 import 'package:revere/core.dart';
 
 /// Internal utility that manages rolling log files.
+///
+/// Rotates [filePath] when its size exceeds [maxBytes], keeping at most
+/// [maxFiles] archived copies beside the active file.
 class RollingFile {
+  /// Absolute path to the active log file.
   final String filePath;
+
+  /// Maximum file size in bytes before rotation is triggered. Default: 1 MiB.
   final int maxBytes;
+
+  /// Maximum number of archived copies to keep. Default: 5.
   final int maxFiles;
 
   RollingFile(this.filePath, {this.maxBytes = 1024 * 1024, this.maxFiles = 5});
@@ -40,8 +48,14 @@ class RollingFile {
 ///
 /// config keys: `filePath` (String), `maxBytes` (int), `maxFiles` (int).
 class RollingFileTransport extends Transport {
+  /// The underlying [RollingFile] that manages file rotation.
   final RollingFile rollingFile;
 
+  /// Creates a [RollingFileTransport] writing to [filePath].
+  ///
+  /// [filePath] may also be provided via `config['filePath']`.
+  /// [maxBytes] and [maxFiles] can similarly be set via config.
+  /// Throws [ArgumentError] if no file path is resolved.
   RollingFileTransport(
     String? filePath, {
     int? maxBytes,

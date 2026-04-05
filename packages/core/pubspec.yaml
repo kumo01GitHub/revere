@@ -3,7 +3,7 @@ description: "Core logger package for the revere monorepo. Provides extensible, 
 version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
-repository: https://github.com/kumo01GitHub/revere/packages/core
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/core
 
 environment:
   sdk: ^3.11.4

@@ -9,10 +9,20 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 ///
 /// config keys: `format` (String), `name` (String), `callOptions`.
 class AnalyticsTransport extends Transport {
+  /// Log message template. Supports `{level}`, `{message}`, `{timestamp}`,
+  /// `{context}`, `{error}`, `{stackTrace}` placeholders.
   final String format;
+
+  /// Analytics event name template. Supports `{context}` and `{level}`.
+  /// Defaults to `'revere'`.
   final String name;
+
+  /// Optional [AnalyticsCallOptions] forwarded to Firebase Analytics.
   final AnalyticsCallOptions? callOptions;
 
+  /// Creates an [AnalyticsTransport].
+  ///
+  /// Options are read from [config] when available.
   AnalyticsTransport({super.level, super.config})
       : format =
             (config['format'] as String?) ?? '[{level}:{context}] {message}',

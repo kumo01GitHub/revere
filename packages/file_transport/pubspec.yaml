@@ -3,7 +3,7 @@ description: File and rolling file transport for revere logger.
 version: 0.0.5
 
 homepage: https://github.com/kumo01GitHub/revere
-repository: https://github.com/kumo01GitHub/revere/packages/file_transport
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/file_transport
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
