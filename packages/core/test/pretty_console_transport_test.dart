@@ -45,7 +45,7 @@ void main() {
         level: LogLevel.trace,
         config: {'colorize': false},
       );
-      for (final level in LogLevel.values) {
+      for (final level in LogLevel.values.where((l) => l != LogLevel.silent)) {
         await expectLater(t.log(_event(level, 'test message')), completes);
       }
     });

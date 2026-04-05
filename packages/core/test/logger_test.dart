@@ -112,10 +112,9 @@ void main() {
       await logger.warn('w');
       await logger.error('e');
       await logger.fatal('f');
-      expect(
-        t.received.map((e) => e.level).toSet(),
-        containsAll(LogLevel.values),
-      );
+      // LogLevel.silent is a threshold sentinel, not an emittable level.
+      final emittable = LogLevel.values.where((l) => l != LogLevel.silent);
+      expect(t.received.map((e) => e.level).toSet(), containsAll(emittable));
     });
 
     // --- transport level filtering ---

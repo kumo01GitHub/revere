@@ -96,8 +96,8 @@ void main() {
       }
     });
 
-    test('has exactly 6 levels', () {
-      expect(LogLevel.values.length, 6);
+    test('has exactly 7 levels (including silent sentinel)', () {
+      expect(LogLevel.values.length, 7);
     });
 
     test('level names match enum names', () {
@@ -107,6 +107,7 @@ void main() {
       expect(LogLevel.warn.name, 'warn');
       expect(LogLevel.error.name, 'error');
       expect(LogLevel.fatal.name, 'fatal');
+      expect(LogLevel.silent.name, 'silent');
     });
   });
 }

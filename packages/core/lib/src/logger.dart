@@ -42,6 +42,13 @@ class Logger {
     StackTrace? stackTrace,
     String? context,
   }) async {
+    if (level == LogLevel.silent) {
+      throw ArgumentError.value(
+        level,
+        'level',
+        'LogLevel.silent is a threshold sentinel and cannot be used to emit events.',
+      );
+    }
     final event = LogEvent(
       level: level,
       message: message,

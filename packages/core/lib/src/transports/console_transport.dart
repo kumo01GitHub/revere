@@ -48,6 +48,9 @@ class ConsoleTransport extends Transport {
       LogLevel.warn => AnsiColor.wrap(msg, AnsiColor.yellow),
       LogLevel.error => AnsiColor.wrap(msg, AnsiColor.red),
       LogLevel.fatal => AnsiColor.wrap(msg, AnsiColor.magenta),
+      LogLevel.silent => throw StateError(
+        'LogLevel.silent cannot be used to emit events.',
+      ),
     };
   }
 }
