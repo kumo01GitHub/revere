@@ -106,6 +106,25 @@ logger.addTransport(buffered);
 await buffered.dispose();
 ```
 
+### SamplingTransport
+
+Decorator that probabilistically forwards events to an inner transport. Events at unlisted `levels` are always forwarded; listed levels are sampled at `sampleRate`.
+
+```dart
+import 'package:revere/sampling_transport.dart';
+
+// Forward only 10 % of debug/trace events to Sentry, but always forward errors.
+final sampled = SentryTransport()
+    .withSampling(
+      sampleRate: 0.1,
+      levels: [LogLevel.trace, LogLevel.debug],
+    );
+
+logger.addTransport(sampled);
+```
+
+`sampleRate` must be between `0.0` (drop all) and `1.0` (forward all). Import via `package:revere/sampling_transport.dart`.
+
 ## LoggerMixin
 
 Mix into any class for concise, context-aware logging without managing a `Logger` instance manually. The class name is automatically attached as the log context.

@@ -1,0 +1,28 @@
+name: CI / WebSocket Transport
+
+on:
+  workflow_call:
+
+jobs:
+  websocket_transport:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/websocket_transport
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Spec test
+        run: flutter test

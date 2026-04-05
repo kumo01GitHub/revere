@@ -26,6 +26,8 @@ jobs:
             firebase-transport-v*)     DIR="packages/firebase_transport" ;;
             notification-transport-v*) DIR="packages/notification_transport" ;;
             swift-log-transport-v*)    DIR="packages/swift_log_transport" ;;
+            sentry-transport-v*)       DIR="packages/sentry_transport" ;;
+            websocket-transport-v*)    DIR="packages/websocket_transport" ;;
             *) echo "Unknown tag pattern: $TAG" && exit 1 ;;
           esac
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"

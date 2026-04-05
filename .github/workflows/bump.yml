@@ -14,6 +14,8 @@ on:
           - android_log_transport
           - swift_log_transport
           - notification_transport
+          - sentry_transport
+          - websocket_transport
       bump:
         description: "Bump type"
         required: true
@@ -45,6 +47,8 @@ jobs:
             firebase_transport)     DIR="packages/firebase_transport";     TAG_PREFIX="firebase-transport-v" ;;
             notification_transport) DIR="packages/notification_transport"; TAG_PREFIX="notification-transport-v" ;;
             swift_log_transport)    DIR="packages/swift_log_transport";    TAG_PREFIX="swift-log-transport-v" ;;
+            sentry_transport)       DIR="packages/sentry_transport";       TAG_PREFIX="sentry-transport-v" ;;
+            websocket_transport)    DIR="packages/websocket_transport";    TAG_PREFIX="websocket-transport-v" ;;
           esac
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"
           echo "tag_prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"

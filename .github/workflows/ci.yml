@@ -24,3 +24,9 @@ jobs:
 
   notification_transport:
     uses: ./.github/workflows/ci-notification-transport.yml
+
+  sentry_transport:
+    uses: ./.github/workflows/ci-sentry-transport.yml
+
+  websocket_transport:
+    uses: ./.github/workflows/ci-websocket-transport.yml

@@ -1,5 +1,6 @@
-## 1.0.1
+## 1.1.0
 
+* feat: add `SamplingTransport` decorator and `withSampling` extension.
 * docs: unified package listing order (file → firebase → android → swift → notification) in README.
 * ci: unified package listing order in CI and bump workflows.
 * ci: pin dart-lang/setup-dart to commit hash instead of mutable v1 tag.
