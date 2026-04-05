@@ -31,18 +31,21 @@ import 'firebase_transport.dart';
 /// ```
 mixin FirebaseTrackerMixin {
   static final FirebaseTransport _defaultTransport = FirebaseTransport();
-  static final Logger _defaultLogger = Logger([_defaultTransport]);
 
-  /// The [FirebaseTransport] backing the default [logger].
+  /// The [FirebaseTransport] backing the [logger].
   ///
-  /// Override to provide a custom instance. When overriding, also override
-  /// [logger] to keep them in sync.
+  /// Override to provide a custom instance (e.g. for testing or a
+  /// differently-configured transport). The [logger] is automatically
+  /// constructed from this value, so overriding [firebaseTransport] alone
+  /// is sufficient.
   FirebaseTransport get firebaseTransport => _defaultTransport;
 
   /// The [Logger] used for all tracking calls.
   ///
-  /// Override to provide a custom instance (e.g. with a different transport).
-  Logger get logger => _defaultLogger;
+  /// Lazily initialised from [firebaseTransport] on first access. Override
+  /// only when you need full control over the [Logger] configuration.
+  late final Logger _logger = Logger([firebaseTransport]);
+  Logger get logger => _logger;
 
   /// Context label embedded in log events. Defaults to the runtime type name.
   String get trackerContext => runtimeType.toString();
