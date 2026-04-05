@@ -123,5 +123,5 @@ class WebSocketTransport extends Transport {
   }
 
   /// Creates the underlying [WebSocket]. Override in tests to inject a fake.
-  Future<WebSocket> createWebSocket(String url) => WebSocket.connect(url);
+  Future<WebSocket> createWebSocket(String url) => WebSocket.connect(url); // coverage:ignore-line
 }

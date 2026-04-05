@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere/core.dart';
 import 'package:websocket_transport/websocket_transport.dart';
@@ -51,6 +52,26 @@ class _FailingWebSocketTransport extends WebSocketTransport {
   Future<WebSocket> createWebSocket(String url) async {
     throw const SocketException('refused');
   }
+}
+
+class _ThrowingAddWebSocket extends _FakeWebSocket {
+  @override
+  void add(dynamic data) => throw const SocketException('broken pipe');
+}
+
+/// Transport whose [createWebSocket] is provided by a callback, allowing
+/// tests to control connection behaviour (blocking, failing, etc.).
+class _CallbackTransport extends WebSocketTransport {
+  final Future<WebSocket> Function(String) _factory;
+
+  _CallbackTransport(
+    super.url,
+    this._factory, {
+    super.maxReconnectDelay,
+  });
+
+  @override
+  Future<WebSocket> createWebSocket(String url) => _factory(url);
 }
 
 // ---------------------------------------------------------------------------
@@ -136,6 +157,64 @@ void main() {
       await t.dispose();
 
       expect(fake.closeCalled, isTrue);
+    });
+
+    test('concurrent log calls share in-flight connect future', () async {
+      final fake = _FakeWebSocket();
+      final blocker = Completer<void>();
+      final t = _CallbackTransport('ws://localhost:9000', (_) async {
+        await blocker.future;
+        return fake;
+      });
+
+      // Both calls started before connection completes — second hits L55.
+      final f1 = t.log(_event(LogLevel.info, 'first'));
+      final f2 = t.log(_event(LogLevel.info, 'second'));
+
+      blocker.complete();
+      await Future.wait([f1, f2]);
+
+      expect(fake.sent, hasLength(2));
+      await t.dispose();
+    });
+
+    test('socket.add failure drops event without throwing', () async {
+      final throwing = _ThrowingAddWebSocket();
+      final t = _FakeWebSocketTransport('ws://localhost:9000', throwing);
+
+      await expectLater(t.log(_event(LogLevel.info, 'msg')), completes);
+      await t.dispose();
+    });
+
+    test('reconnect callback fires after delay and caps back-off', () {
+      // Use fakeAsync so the 1-second Future.delayed runs without real wait.
+      fakeAsync((async) {
+        var connectCount = 0;
+        final fake = _FakeWebSocket();
+        final t = _CallbackTransport(
+          'ws://localhost:9000',
+          (_) {
+            connectCount++;
+            if (connectCount == 1) {
+              return Future.error(const SocketException('refused'));
+            }
+            return Future.value(fake);
+          },
+          // With maxReconnectDelay == initial delay (1s), the doubled delay
+          // (2s) exceeds the cap and L103 is hit on the very first reconnect.
+          maxReconnectDelay: const Duration(seconds: 1),
+        );
+
+        t.log(_event(LogLevel.info, 'msg')); // fire-and-forget
+        async.flushMicrotasks(); // connect fails → _scheduleReconnect → L103
+
+        async.elapse(const Duration(seconds: 1)); // timer fires → L98–99
+        async.flushMicrotasks(); // second _connect succeeds
+
+        expect(connectCount, 2);
+        t.dispose();
+        async.flushMicrotasks();
+      });
     });
   });
 }
