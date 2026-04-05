@@ -1,0 +1,90 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package"
+        required: true
+        type: choice
+        options:
+          - core
+          - android_log_transport
+          - file_transport
+          - firebase_transport
+          - notification_transport
+          - swift_log_transport
+      bump:
+        description: "Bump type"
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve package metadata
+        id: meta
+        run: |
+          case "${{ inputs.package }}" in
+            core)                   DIR="packages/core";                  TAG_PREFIX="core-v" ;;
+            android_log_transport)  DIR="packages/android_log_transport"; TAG_PREFIX="android-log-transport-v" ;;
+            file_transport)         DIR="packages/file_transport";         TAG_PREFIX="file-transport-v" ;;
+            firebase_transport)     DIR="packages/firebase_transport";     TAG_PREFIX="firebase-transport-v" ;;
+            notification_transport) DIR="packages/notification_transport"; TAG_PREFIX="notification-transport-v" ;;
+            swift_log_transport)    DIR="packages/swift_log_transport";    TAG_PREFIX="swift-log-transport-v" ;;
+          esac
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          echo "tag_prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"
+
+      - name: Bump version in pubspec.yaml
+        id: version
+        working-directory: ${{ steps.meta.outputs.dir }}
+        run: |
+          CURRENT=$(grep "^version:" pubspec.yaml | sed 's/version: //')
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          case "${{ inputs.bump }}" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+          esac
+          NEW="${MAJOR}.${MINOR}.${PATCH}"
+          sed -i "s/^version: .*/version: ${NEW}/" pubspec.yaml
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+
+      - name: Update build.gradle.kts (if exists)
+        run: |
+          FILE=$(find ${{ steps.meta.outputs.dir }} -name "build.gradle.kts" -not -path "*/build/*" | head -1)
+          if [ -n "$FILE" ]; then
+            sed -i "s/^version = .*/version = \"${{ steps.version.outputs.new }}\"/" "$FILE"
+            echo "Updated $FILE"
+          fi
+
+      - name: Update podspec (if exists)
+        run: |
+          FILE=$(find ${{ steps.meta.outputs.dir }} -name "*.podspec" -not -path "*/build/*" | head -1)
+          if [ -n "$FILE" ]; then
+            sed -i "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.new }}'/" "$FILE"
+            echo "Updated $FILE"
+          fi
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ steps.meta.outputs.dir }}/pubspec.yaml
+          git add $(find ${{ steps.meta.outputs.dir }} -name "build.gradle.kts" -not -path "*/build/*") 2>/dev/null || true
+          git add $(find ${{ steps.meta.outputs.dir }} -name "*.podspec" -not -path "*/build/*") 2>/dev/null || true
+          git commit -m "chore: bump ${{ inputs.package }} to ${{ steps.version.outputs.new }}"
+          git tag "${{ steps.meta.outputs.tag_prefix }}${{ steps.version.outputs.new }}"
+          git push origin HEAD "${{ steps.meta.outputs.tag_prefix }}${{ steps.version.outputs.new }}"
