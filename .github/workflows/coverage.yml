@@ -1,0 +1,40 @@
+name: Coverage
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Run tests with coverage
+        run: |
+          for dir in packages/*/; do
+            if [ -f "${dir}pubspec.yaml" ] && [ -d "${dir}test" ]; then
+              echo "Running tests for ${dir}"
+              (cd "$dir" && flutter pub get && flutter test --coverage) || echo "Tests failed for ${dir}, skipping"
+            fi
+          done
+
+      - name: Collect coverage reports
+        id: collect_reports
+        run: |
+          REPORTS=$(find packages -name "lcov.info" | tr '\n' ',' | sed 's/,$//')
+          echo "reports=${REPORTS}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: ${{ steps.collect_reports.outputs.reports }}
