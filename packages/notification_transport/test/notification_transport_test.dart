@@ -20,7 +20,6 @@ class _FakeNotificationPlatform extends FlutterLocalNotificationsPlatform {}
 class _ConcreteNotificationTransport extends NotificationTransport {
   _ConcreteNotificationTransport({
     required FlutterLocalNotificationsPlugin plugin,
-    super.level,
     super.config,
   }) : super(plugin: plugin);
 

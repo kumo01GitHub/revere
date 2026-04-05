@@ -35,11 +35,6 @@ class _FakeWebSocket implements WebSocket {
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
 
-class _FailingWebSocket implements WebSocket {
-  @override
-  dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
-}
-
 class _FakeWebSocketTransport extends WebSocketTransport {
   final _FakeWebSocket fakeSocket;
 
@@ -50,7 +45,7 @@ class _FakeWebSocketTransport extends WebSocketTransport {
 }
 
 class _FailingWebSocketTransport extends WebSocketTransport {
-  _FailingWebSocketTransport(super.url, {super.level});
+  _FailingWebSocketTransport(super.url);
 
   @override
   Future<WebSocket> createWebSocket(String url) async {

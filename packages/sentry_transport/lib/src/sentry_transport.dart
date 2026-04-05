@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:revere/core.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart' hide Transport;
 
 /// Sends log events to Sentry.
 ///
@@ -20,12 +20,12 @@ class SentryTransport extends Transport {
 
   /// Creates a [SentryTransport].
   SentryTransport({super.level = LogLevel.info, super.config})
-    : format = (config['format'] as String?) ?? '[{level}:{context}] {message}';
+      : format =
+            (config['format'] as String?) ?? '[{level}:{context}] {message}';
 
   @override
   Future<void> emitLog(LogEvent event) async {
-    final isError =
-        event.level == LogLevel.error ||
+    final isError = event.level == LogLevel.error ||
         event.level == LogLevel.fatal ||
         event.error != null;
 
@@ -58,13 +58,13 @@ class SentryTransport extends Transport {
       .replaceAll('{stackTrace}', event.stackTrace?.toString() ?? '');
 
   SentryLevel _sentryLevel(LogLevel level) => switch (level) {
-    LogLevel.trace => SentryLevel.debug,
-    LogLevel.debug => SentryLevel.debug,
-    LogLevel.info => SentryLevel.info,
-    LogLevel.warn => SentryLevel.warning,
-    LogLevel.error => SentryLevel.error,
-    LogLevel.fatal => SentryLevel.fatal,
-  };
+        LogLevel.trace => SentryLevel.debug,
+        LogLevel.debug => SentryLevel.debug,
+        LogLevel.info => SentryLevel.info,
+        LogLevel.warn => SentryLevel.warning,
+        LogLevel.error => SentryLevel.error,
+        LogLevel.fatal => SentryLevel.fatal,
+      };
 
   @protected
   Future<void> dispatchBreadcrumb(Breadcrumb breadcrumb) async {
