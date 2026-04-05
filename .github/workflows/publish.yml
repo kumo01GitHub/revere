@@ -51,6 +51,9 @@ jobs:
         working-directory: ${{ steps.meta.outputs.dir }}
         run: flutter pub publish --dry-run
 
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
       - name: Publish to pub.dev
         working-directory: ${{ steps.meta.outputs.dir }}
         run: dart pub publish --force
