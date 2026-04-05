@@ -281,7 +281,7 @@ void main() {
       'PlatformDispatcher handler calls previously installed handler',
       () async {
         bool prevCalled = false;
-        PlatformDispatcher.instance.onError = (_, __) {
+        PlatformDispatcher.instance.onError = (_, _) {
           prevCalled = true;
           return true;
         };
