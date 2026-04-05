@@ -9,11 +9,11 @@ on:
         type: choice
         options:
           - core
-          - android_log_transport
           - file_transport
           - firebase_transport
-          - notification_transport
+          - android_log_transport
           - swift_log_transport
+          - notification_transport
       bump:
         description: "Bump type"
         required: true

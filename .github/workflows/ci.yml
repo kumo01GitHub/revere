@@ -16,11 +16,11 @@ jobs:
   firebase_transport:
     uses: ./.github/workflows/ci-firebase-transport.yml
 
-  notification_transport:
-    uses: ./.github/workflows/ci-notification-transport.yml
-
   android_log_transport:
     uses: ./.github/workflows/ci-android-log-transport.yml
 
   swift_log_transport:
     uses: ./.github/workflows/ci-swift-log-transport.yml
+
+  notification_transport:
+    uses: ./.github/workflows/ci-notification-transport.yml

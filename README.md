@@ -46,8 +46,8 @@ For advanced usage — `LoggerMixin`, `ErrorTrackerMixin`, buffered transport, a
 | `file_transport` | [![pub package](https://img.shields.io/pub/v/file_transport.svg)](https://pub.dev/packages/file_transport) [![pub points](https://img.shields.io/pub/points/file_transport)](https://pub.dev/packages/file_transport/score) | File output and rolling file output |
 | `firebase_transport` | [![pub package](https://img.shields.io/pub/v/firebase_transport.svg)](https://pub.dev/packages/firebase_transport) [![pub points](https://img.shields.io/pub/points/firebase_transport)](https://pub.dev/packages/firebase_transport/score) | Firebase Analytics and Crashlytics transports |
 | `android_log_transport` | [![pub package](https://img.shields.io/pub/v/android_log_transport.svg)](https://pub.dev/packages/android_log_transport) [![pub points](https://img.shields.io/pub/points/android_log_transport)](https://pub.dev/packages/android_log_transport/score) | Android Logcat transport |
-| `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
 | `swift_log_transport` | [![pub package](https://img.shields.io/pub/v/swift_log_transport.svg)](https://pub.dev/packages/swift_log_transport) [![pub points](https://img.shields.io/pub/points/swift_log_transport)](https://pub.dev/packages/swift_log_transport/score) | Apple swift-log transport for iOS/macOS |
+| `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
 
 ## Directory Structure
 
@@ -57,8 +57,8 @@ packages/
   file_transport/         # File and rolling file output
   firebase_transport/     # Firebase Analytics/Crashlytics output
   android_log_transport/  # Android Logcat output
-  notification_transport/ # Notification output (push/desktop)
   swift_log_transport/    # Apple swift-log output
+  notification_transport/ # Notification output (push/desktop)
 ```
 
 ## Features
