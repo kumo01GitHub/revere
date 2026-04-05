@@ -27,18 +27,16 @@ Ideal if you want a logger that's ready to use in minutes, stays lean by includi
 ```dart
 import 'package:revere/core.dart';
 import 'package:file_transport/file_transport.dart';
-import 'package:firebase_transport/analytics_transport.dart';
 
 final logger = Logger();
-logger.addTransport(ConsoleTransport(
-  level: LogLevel.info,
-  config: {'format': '[{level}] {message}', 'colorize': true},
-));
-logger.addTransport(FileTransport('/tmp/app.log'));
-logger.addTransport(AnalyticsTransport(config: {'name': 'custom_event'}));
+logger.addTransport(ConsoleTransport(level: LogLevel.info));
+logger.addTransport(FileTransport('/var/log/app.log'));
 
-await logger.info('Hello!');
+await logger.info('Server started');
+await logger.error('Something failed', error: e, stackTrace: st);
 ```
+
+For advanced usage — `LoggerMixin`, `ErrorTrackerMixin`, buffered transport, and per-transport config — see the [revere package README](packages/core/README.md).
 
 ## Packages
 
@@ -71,28 +69,15 @@ packages/
 - Fully asynchronous, awaitable logging
 - Easy extension via abstract base class
 
-## Provided Transports
-
-| Package Name            | Description / Features |
-|--------------------------|-------------------------------------------------------|
-| core (Console/HTTP)     | Console output and HTTP POST. Config: color, format, headers, etc. |
-| file_transport          | File output and rolling file support |
-| firebase_transport      | Firebase Analytics/Crashlytics. Configurable event name and format |
-| android_log_transport   | Android Logcat output. Configurable tag and format |
-| notification_transport  | Push/desktop notification output. Configurable title and format |
-| swift_log_transport     | Apple swift-log output. Configurable label, metadata, and format |
-
 ## Package Documentation
 
 See each package README for setup, configuration, and platform-specific notes.
 
 ## How to Extend
 
-- Inherit from the `Transport` abstract class and implement `emitLog`
-- Add your Transporter to the logger via `addTransport`
-
----
+Implement the `Transport` abstract class and add it via `logger.addTransport()`.
+Details and a worked example are in the [revere package README](packages/core/README.md).
 
 ## Testing
 
-- Run `flutter test` in each package to verify logger and transports.
+Run `flutter test` in each package to verify logger and transports.
