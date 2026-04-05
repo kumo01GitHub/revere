@@ -1,0 +1,23 @@
+name: sentry_transport
+description: Sentry transport for revere logger.
+version: 1.0.0
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/sentry_transport
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sentry_flutter: ^8.0.0
+  revere: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
