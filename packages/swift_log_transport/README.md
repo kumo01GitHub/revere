@@ -33,3 +33,15 @@ dependencies:
 - No special setup required for iOS/macOS projects (standard swift-log output)
 - Uses Apple's swift-log under the hood.
 - For more information, see [revere](https://github.com/kumo01GitHub/revere/).
+
+## CocoaPods Support & NSLog Fallback
+This package supports both Swift Package Manager (SPM) and CocoaPods.
+
+| Build system | Backend |
+|---|---|
+| Swift Package Manager | [apple/swift-log](https://github.com/apple/swift-log) |
+| CocoaPods | `NSLog` |
+
+Because `apple/swift-log` is an SPM-only package (no `.podspec` is distributed by Apple), it cannot be resolved by CocoaPods.
+When CocoaPods is used, the plugin automatically falls back to `NSLog` at **compile time** via `#if canImport(Logging)`.
+No runtime configuration is needed — the correct backend is selected by the build system transparently.
