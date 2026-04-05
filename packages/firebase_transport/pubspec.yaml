@@ -1,6 +1,6 @@
 name: firebase_transport
 description: Firebase Crashlytics/Analytics transport for revere logger.
-version: 0.0.7
+version: 1.0.0
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/tree/main/packages/firebase_transport
