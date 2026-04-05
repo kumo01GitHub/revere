@@ -25,7 +25,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
-  revere: ^0.0.5
+  revere: ^1.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
   firebase_crashlytics: ^3.4.0
   firebase_analytics: ^10.8.0
-  revere: ^0.0.7
+  revere: ^1.0.0
 
 dev_dependencies:
   flutter_test:

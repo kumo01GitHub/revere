@@ -10,7 +10,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  revere: ^0.0.7
+  revere: ^1.0.0
 
 dev_dependencies:
   flutter_test:
