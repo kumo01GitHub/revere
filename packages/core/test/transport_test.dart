@@ -108,7 +108,9 @@ void main() {
       await logger.warn('warn');
       await logger.error('error');
       await logger.fatal('fatal');
-      expect(events.map((e) => e.level), containsAll(LogLevel.values));
+      // LogLevel.silent is a threshold sentinel, not an emittable level.
+      final emittable = LogLevel.values.where((l) => l != LogLevel.silent);
+      expect(events.map((e) => e.level), containsAll(emittable));
     });
     test('log only calls transports at or above level', () async {
       final logger = Logger();

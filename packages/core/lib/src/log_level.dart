@@ -24,4 +24,11 @@ enum LogLevel {
 
   /// Very severe error events that usually lead the application to terminate.
   fatal,
+
+  /// Suppresses all log output when used as a [Transport] level threshold.
+  ///
+  /// Setting a transport's level to [silent] silences it completely, because
+  /// no real event can have an index greater than or equal to this value.
+  /// Do not emit events at this level.
+  silent,
 }
