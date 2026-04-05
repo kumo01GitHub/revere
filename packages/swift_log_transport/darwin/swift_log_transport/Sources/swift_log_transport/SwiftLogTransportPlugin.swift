@@ -4,10 +4,14 @@ import FlutterMacOS
 #else
 import Flutter
 #endif
+#if canImport(Logging)
 import Logging
+#endif
 
 @objc public class SwiftLogTransportPlugin: NSObject, FlutterPlugin {
+  #if canImport(Logging)
   static var loggerCache: [String: Logger] = [:]
+  #endif
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     #if os(macOS)
@@ -35,6 +39,7 @@ import Logging
     let label = args["label"] as? String ?? "Revere"
     let metadataMap = args["metadata"] as? [String: String]
 
+    #if canImport(Logging)
     let loggerKey = "\(label):\(context)"
     var logger: Logger
     if let cached = loggerCache[loggerKey] {
@@ -58,5 +63,9 @@ import Logging
     case "fatal": logger.critical("\(message)")
     default: logger.info("\(message)")
     }
+    #else
+    // NSLog fallback for CocoaPods builds (swift-log is unavailable)
+    NSLog("[%@][%@][%@] %@", label, context, level.uppercased(), message)
+    #endif
   }
 }
