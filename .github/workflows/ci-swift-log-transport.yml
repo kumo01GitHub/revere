@@ -9,21 +9,54 @@ jobs:
     strategy:
       matrix:
         include:
+          # macos-14 / iOS 17
           - os: macos-14
             platform: ios
             ios-version: "17"
+            package_manager: spm
+          - os: macos-14
+            platform: ios
+            ios-version: "17"
+            package_manager: cocoapods
+          # macos-14 / macOS
+          - os: macos-14
+            platform: macos
+            package_manager: spm
+          - os: macos-14
+            platform: macos
+            package_manager: cocoapods
+          # macos-15 / iOS 18
           - os: macos-15
             platform: ios
             ios-version: "18"
+            package_manager: spm
+          - os: macos-15
+            platform: ios
+            ios-version: "18"
+            package_manager: cocoapods
+          # macos-15 / macOS
+          - os: macos-15
+            platform: macos
+            package_manager: spm
+          - os: macos-15
+            platform: macos
+            package_manager: cocoapods
+          # macos-26 / iOS 26
           - os: macos-26
             platform: ios
             ios-version: "26"
-          - os: macos-14
-            platform: macos
-          - os: macos-15
-            platform: macos
+            package_manager: spm
+          - os: macos-26
+            platform: ios
+            ios-version: "26"
+            package_manager: cocoapods
+          # macos-26 / macOS
           - os: macos-26
             platform: macos
+            package_manager: spm
+          - os: macos-26
+            platform: macos
+            package_manager: cocoapods
     defaults:
       run:
         working-directory: packages/swift_log_transport
@@ -37,7 +70,12 @@ jobs:
           channel: stable
 
       - name: Set up Swift Package Manager
+        if: matrix.package_manager == 'spm'
         run: flutter config --enable-swift-package-manager
+
+      - name: Set up CocoaPods
+        if: matrix.package_manager == 'cocoapods'
+        run: flutter config --no-enable-swift-package-manager
 
       - name: Build (dependency resolution)
         run: flutter pub get
