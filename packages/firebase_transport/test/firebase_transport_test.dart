@@ -219,4 +219,76 @@ void main() {
       expect(t.analyticsCalls.first.$2['message'], 'warn: test');
     });
   });
+
+  group('FirebaseTransport – real dispatch methods (Firebase not initialised)',
+      () {
+    // These tests call the concrete @protected dispatch methods directly.
+    // Firebase SDK is not initialised so each call throws; the important
+    // thing is that the method bodies are reached (coverage) and the
+    // errors are expected rather than leaked.
+
+    late _ConcreteFirebaseTransport transport;
+
+    setUp(() {
+      transport = _ConcreteFirebaseTransport();
+    });
+
+    test('dispatchAnalyticsEvent throws when Firebase not initialised',
+        () async {
+      await expectLater(
+        () => transport.callDispatchAnalyticsEvent('evt', {}, null),
+        throwsA(anything),
+      );
+    });
+
+    test('dispatchCrashlyticsError throws when Firebase not initialised',
+        () async {
+      await expectLater(
+        () => transport.callDispatchCrashlyticsError(
+          Exception('e'),
+          null,
+          fatal: false,
+          reason: 'test',
+        ),
+        throwsA(anything),
+      );
+    });
+
+    test('dispatchCrashlyticsLog throws when Firebase not initialised',
+        () async {
+      await expectLater(
+        () => transport.callDispatchCrashlyticsLog('message'),
+        throwsA(anything),
+      );
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Concrete transport that exposes @protected dispatch methods for testing
+// ---------------------------------------------------------------------------
+
+class _ConcreteFirebaseTransport extends FirebaseTransport {
+  Future<void> callDispatchAnalyticsEvent(
+    String name,
+    Map<String, dynamic> parameters,
+    AnalyticsCallOptions? callOptions,
+  ) =>
+      dispatchAnalyticsEvent(name, parameters, callOptions);
+
+  Future<void> callDispatchCrashlyticsError(
+    Object error,
+    StackTrace? stackTrace, {
+    bool fatal = false,
+    String? reason,
+  }) =>
+      dispatchCrashlyticsError(
+        error,
+        stackTrace,
+        fatal: fatal,
+        reason: reason,
+      );
+
+  Future<void> callDispatchCrashlyticsLog(String message) =>
+      dispatchCrashlyticsLog(message);
 }

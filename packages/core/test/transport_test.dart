@@ -61,6 +61,40 @@ void main() {
       await Future.delayed(Duration(milliseconds: 100));
       expect(server.received.isEmpty, isTrue);
     });
+
+    test('custom serializer is used when provided', () async {
+      final transport = HttpTransport(
+        server.uri.toString(),
+        level: LogLevel.info,
+        serializer: (e) => {'custom': e.message.toString()},
+      );
+      await transport.log(LogEvent(level: LogLevel.info, message: 'hello'));
+      await Future.delayed(Duration(milliseconds: 100));
+      expect(server.received.any((e) => e['custom'] == 'hello'), isTrue);
+    });
+
+    test('proxy config does not throw (errors swallowed)', () async {
+      // The proxy doesn't exist, but catch(_) in emitLog swallows the error.
+      final transport = HttpTransport(
+        server.uri.toString(),
+        config: {'proxy': 'localhost:19999'},
+      );
+      await expectLater(
+        transport.log(LogEvent(level: LogLevel.info, message: 'proxy')),
+        completes,
+      );
+    });
+
+    test('timeout config takes the timeout branch', () async {
+      final transport = HttpTransport(
+        server.uri.toString(),
+        level: LogLevel.info,
+        config: {'timeout': 5000},
+      );
+      await transport.log(LogEvent(level: LogLevel.info, message: 'timed'));
+      await Future.delayed(Duration(milliseconds: 100));
+      expect(server.received.any((e) => e['message'] == 'timed'), isTrue);
+    });
   });
 
   group('Logger', () {

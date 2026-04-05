@@ -152,5 +152,29 @@ void main() {
       await t.emitLog(_event(LogLevel.info, 'hello'));
       expect(lines.join(''), contains('\x1B'));
     });
+
+    test('colorize=true includes error line in ANSI color', () async {
+      final lines = <String>[];
+      final t = _TestPrettyTransport(lines, config: {'colorize': true});
+      await t.emitLog(
+        _event(LogLevel.error, 'boom', error: Exception('colorized error')),
+      );
+      final out = lines.join('');
+      expect(out, contains('\x1B'));
+      expect(out, contains('colorized error'));
+    });
+
+    test('colorize=true includes stackTrace lines in ANSI color', () async {
+      final lines = <String>[];
+      final t = _TestPrettyTransport(
+        lines,
+        config: {'colorize': true, 'showStackTrace': true},
+      );
+      final trace = StackTrace.fromString('#0  main (file:///test.dart:1:1)');
+      await t.emitLog(_event(LogLevel.error, 'crash', stackTrace: trace));
+      final out = lines.join('');
+      expect(out, contains('\x1B'));
+      expect(out, contains('#0  main'));
+    });
   });
 }

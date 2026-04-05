@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere/core.dart';
 import 'package:android_log_transport/android_log_transport.dart';
+import 'package:android_log_transport/android_log_transport_method_channel.dart';
 import 'package:android_log_transport/android_log_transport_platform_interface.dart';
 
 /// Fake platform that records all calls without invoking a method channel.
@@ -15,6 +16,15 @@ class _FakePlatform extends AndroidLogTransportPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  // setUpAll runs before any setUp — reading .instance here triggers the lazy
+  // initialiser on platform_interface.dart line 16 (MethodChannelAndroidLogTransport()).
+  setUpAll(() {
+    expect(
+      AndroidLogTransportPlatform.instance,
+      isA<MethodChannelAndroidLogTransport>(),
+    );
+  });
 
   late _FakePlatform fake;
 

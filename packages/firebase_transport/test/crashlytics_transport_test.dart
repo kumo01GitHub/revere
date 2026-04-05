@@ -119,4 +119,23 @@ void main() {
       expect(t.calls.first, 'ok|');
     });
   });
+
+  group('CrashlyticsTransport – real dispatchLog (Firebase not initialised)',
+      () {
+    test('dispatchLog throws when Firebase not initialised', () async {
+      final t = _ConcreteCrashlyticsTransport();
+      await expectLater(
+        () => t.callDispatchLog('message'),
+        throwsA(anything),
+      );
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Concrete transport that exposes the @protected dispatchLog for testing
+// ---------------------------------------------------------------------------
+
+class _ConcreteCrashlyticsTransport extends CrashlyticsTransport {
+  Future<void> callDispatchLog(String message) => dispatchLog(message);
 }

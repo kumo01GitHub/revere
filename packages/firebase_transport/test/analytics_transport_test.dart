@@ -214,4 +214,28 @@ void main() {
       expect(t.calls.first.$3, same(opts));
     });
   });
+
+  group('AnalyticsTransport – real dispatchEvent (Firebase not initialised)',
+      () {
+    test('dispatchEvent throws when Firebase not initialised', () async {
+      final t = _ConcreteAnalyticsTransport();
+      await expectLater(
+        () => t.callDispatchEvent('evt', {}, null),
+        throwsA(anything),
+      );
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Concrete transport that exposes the @protected dispatchEvent for testing
+// ---------------------------------------------------------------------------
+
+class _ConcreteAnalyticsTransport extends AnalyticsTransport {
+  Future<void> callDispatchEvent(
+    String name,
+    Map<String, dynamic> parameters,
+    AnalyticsCallOptions? callOptions,
+  ) =>
+      dispatchEvent(name, parameters, callOptions);
 }

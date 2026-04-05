@@ -3,6 +3,42 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:revere/core.dart';
 import 'package:notification_transport/notification_transport.dart';
 
+// ---------------------------------------------------------------------------
+// Fake platform interface — registered as FlutterLocalNotificationsPlatform
+// .instance so the plugin's show() / initialize() become no-ops instead of
+// throwing LateInitializationError.
+// ---------------------------------------------------------------------------
+
+class _FakeNotificationPlatform extends FlutterLocalNotificationsPlatform {}
+
+// ---------------------------------------------------------------------------
+// Concrete transport that does NOT override initialize() or dispatchShow(),
+// so their real bodies run.  Accepts an already-created plugin instance and
+// exposes @protected helpers for direct invocation in tests.
+// ---------------------------------------------------------------------------
+
+class _ConcreteNotificationTransport extends NotificationTransport {
+  _ConcreteNotificationTransport({
+    required FlutterLocalNotificationsPlugin plugin,
+    super.level,
+    super.config,
+  }) : super(plugin: plugin);
+
+  Future<void> callInitialize() => initialize();
+
+  Future<void> callDispatchShow(
+    int id,
+    String title,
+    String body,
+    NotificationDetails details,
+  ) =>
+      dispatchShow(id, title, body, details);
+}
+
+// ---------------------------------------------------------------------------
+// Fake that overrides initialize + dispatchShow (existing test helper)
+// ---------------------------------------------------------------------------
+
 class _FakeNotificationTransport extends NotificationTransport {
   int initializeCalls = 0;
   final List<(int, String, String, NotificationDetails)> calls = [];
@@ -517,6 +553,85 @@ void main() {
       );
       await transport.emitLog(LogEvent(level: LogLevel.info, message: 'msg'));
       expect(transport.calls.first.$4.windows!.subtitle, 'system logs');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  group('NotificationTransport – real initialize() body', () {
+    // Register a no-op platform so resolvePlatformSpecificImplementation()
+    // returns null → plugin methods become no-ops (no native code required).
+    setUpAll(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      FlutterLocalNotificationsPlatform.instance = _FakeNotificationPlatform();
+    });
+
+    test('initialize() completes without error in test environment', () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+      );
+      await expectLater(transport.callInitialize(), completes);
+    });
+
+    test('initialize() with custom androidIcon completes', () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+        config: {'androidIcon': '@drawable/app_icon'},
+      );
+      await expectLater(transport.callInitialize(), completes);
+    });
+
+    test('initialize() with linuxDefaultActionName completes', () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+        config: {'linuxDefaultActionName': 'Open App'},
+      );
+      await expectLater(transport.callInitialize(), completes);
+    });
+
+    test('initialize() with full Windows config completes', () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+        config: {
+          'windowsAppName': 'TestApp',
+          'windowsAppUserModelId': 'com.test.app',
+          'windowsGuid': '00000000-0000-0000-0000-000000000000',
+          'windowsIconPath': 'icon.ico',
+        },
+      );
+      await expectLater(transport.callInitialize(), completes);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  group('NotificationTransport – real dispatchShow() body', () {
+    setUpAll(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      FlutterLocalNotificationsPlatform.instance = _FakeNotificationPlatform();
+    });
+
+    test('dispatchShow() completes without error in test environment',
+        () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+      );
+      final details = NotificationDetails(
+        android: AndroidNotificationDetails('ch', 'Channel'),
+      );
+      await expectLater(
+        transport.callDispatchShow(1, 'title', 'body', details),
+        completes,
+      );
+    });
+
+    test('emitLog routes through real dispatchShow in test environment',
+        () async {
+      final transport = _ConcreteNotificationTransport(
+        plugin: FlutterLocalNotificationsPlugin(),
+      );
+      await expectLater(
+        transport.emitLog(LogEvent(level: LogLevel.info, message: 'live')),
+        completes,
+      );
     });
   });
 }

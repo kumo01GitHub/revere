@@ -2,107 +2,76 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:revere/core.dart';
-import 'package:firebase_transport/firebase_transport.dart';
-import 'package:firebase_transport/firebase_tracker_mixin.dart';
 
 // ---------------------------------------------------------------------------
-// Fake transport to capture calls without touching Firebase SDK
+// Fake transport to capture calls without touching real output
 // ---------------------------------------------------------------------------
 
-class _FakeFirebaseTransport extends FirebaseTransport {
+class _CollectingTransport extends Transport {
   final List<LogEvent> logged = [];
-
+  _CollectingTransport() : super(level: LogLevel.trace);
   @override
-  Future<void> dispatchAnalyticsEvent(
-    String name,
-    Map<String, dynamic> parameters,
-    AnalyticsCallOptions? callOptions,
-  ) async {}
-
-  @override
-  Future<void> dispatchCrashlyticsError(
-    Object error,
-    StackTrace? stackTrace, {
-    bool fatal = false,
-    String? reason,
-  }) async {}
-
-  @override
-  Future<void> dispatchCrashlyticsLog(String message) async {}
-
-  /// Override emitLog so we capture the raw event before it's processed.
-  @override
-  Future<void> emitLog(LogEvent event) async {
-    logged.add(event);
-    await super.emitLog(event);
-  }
+  Future<void> emitLog(LogEvent event) async => logged.add(event);
 }
 
 // ---------------------------------------------------------------------------
 // Concrete classes that use the mixin
 // ---------------------------------------------------------------------------
 
-class _Service with FirebaseTrackerMixin {
-  final _FakeFirebaseTransport _transport;
-  _Service(this._transport);
+class _Service with ErrorTrackerMixin {
+  final Logger _log;
+  _Service(this._log);
 
   @override
-  _FakeFirebaseTransport get firebaseTransport => _transport;
+  Logger get logger => _log;
 }
 
-class _DefaultContextService with FirebaseTrackerMixin {
-  final _FakeFirebaseTransport _transport;
-  _DefaultContextService(this._transport);
+class _CustomContextService with ErrorTrackerMixin {
+  final Logger _log;
+  _CustomContextService(this._log);
 
   @override
-  _FakeFirebaseTransport get firebaseTransport => _transport;
+  Logger get logger => _log;
 }
 
-/// Uses the built-in default transport (does not override [firebaseTransport]).
-class _DefaultTransportService with FirebaseTrackerMixin {}
+/// Uses the built-in default logger (does not override [logger]).
+class _DefaultLoggerService with ErrorTrackerMixin {}
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 void main() {
-  late _FakeFirebaseTransport transport;
+  late _CollectingTransport transport;
+  late Logger log;
   late _Service svc;
 
   setUp(() {
-    transport = _FakeFirebaseTransport();
-    svc = _Service(transport);
+    transport = _CollectingTransport();
+    log = Logger([transport]);
+    svc = _Service(log);
   });
 
-  group('FirebaseTrackerMixin – trackAction', () {
-    test('logs an info-level event', () async {
-      await svc.trackAction('button_tap');
-      expect(transport.logged, hasLength(1));
-      expect(transport.logged.first.level, LogLevel.info);
-    });
-
-    test('message equals action when no params', () async {
-      await svc.trackAction('page_view');
-      expect(transport.logged.first.message, 'page_view');
-    });
-
-    test('message appends params as key=value pairs', () async {
-      await svc.trackAction('purchase', params: {'item': 'shoes', 'qty': 2});
-      final msg = transport.logged.first.message as String;
-      expect(msg, startsWith('purchase: '));
-      expect(msg, contains('item=shoes'));
-      expect(msg, contains('qty=2'));
-    });
-
-    test('context is set from trackerContext', () async {
-      await svc.trackAction('login');
-      expect(transport.logged.first.context, '_Service');
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – default logger', () {
+    test('default logger is a Logger instance', () {
+      final svc = _DefaultLoggerService();
+      expect(svc.logger, isA<Logger>());
     });
   });
 
-  group('FirebaseTrackerMixin – trackError', () {
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – trackerContext', () {
+    test('default context is runtimeType name', () async {
+      final svc2 = _CustomContextService(log);
+      await svc2.trackError(Exception('x'));
+      expect(transport.logged.first.context, '_CustomContextService');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – trackError', () {
     test('logs an error-level event by default', () async {
       await svc.trackError(Exception('oops'));
       expect(transport.logged.first.level, LogLevel.error);
@@ -135,10 +104,16 @@ void main() {
       await svc.trackError(err);
       expect(transport.logged.first.message, err.toString());
     });
+
+    test('context is set from trackerContext', () async {
+      await svc.trackError(Exception('ctx'));
+      expect(transport.logged.first.context, '_Service');
+    });
   });
 
-  group('FirebaseTrackerMixin – withTracking', () {
-    test('logs action before executing body', () async {
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – withTracking', () {
+    test('logs info event before body executes', () async {
       await svc.withTracking('init', () async {});
       expect(transport.logged, hasLength(1));
       expect(transport.logged.first.level, LogLevel.info);
@@ -167,35 +142,23 @@ void main() {
         () => svc.withTracking('myAction', () async => throw Exception('x')),
         throwsException,
       );
-      expect(
-        transport.logged.last.message as String,
-        contains('myAction'),
-      );
+      expect(transport.logged.last.message as String, contains('myAction'));
     });
 
-    test('passes params to trackAction', () async {
+    test('passes params to info log message', () async {
       await svc.withTracking('buy', () async {}, params: {'sku': 'abc'});
       final msg = transport.logged.first.message as String;
       expect(msg, contains('sku=abc'));
     });
-  });
 
-  group('FirebaseTrackerMixin – trackerContext', () {
-    test('default context is runtimeType name', () async {
-      final svc2 = _DefaultContextService(transport);
-      await svc2.trackAction('ping');
-      expect(transport.logged.first.context, '_DefaultContextService');
+    test('context is set on logged action event', () async {
+      await svc.withTracking('ping', () async {});
+      expect(transport.logged.first.context, '_Service');
     });
   });
 
-  group('FirebaseTrackerMixin – default firebaseTransport', () {
-    test('default firebaseTransport is a FirebaseTransport instance', () {
-      final svc = _DefaultTransportService();
-      expect(svc.firebaseTransport, isA<FirebaseTransport>());
-    });
-  });
-
-  group('FirebaseTrackerMixin – guarded', () {
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – guarded', () {
     test('returns body result when no error', () async {
       final result = await svc.guarded(() async => 99);
       expect(result, 99);
@@ -208,10 +171,7 @@ void main() {
 
     test('records error and rethrows', () async {
       final err = Exception('guarded fail');
-      await expectLater(
-        () => svc.guarded(() async => throw err),
-        throwsA(err),
-      );
+      await expectLater(() => svc.guarded(() async => throw err), throwsA(err));
       expect(transport.logged, hasLength(1));
       expect(transport.logged.first.error, err);
       expect(transport.logged.first.level, LogLevel.error);
@@ -242,7 +202,8 @@ void main() {
     });
   });
 
-  group('FirebaseTrackerMixin – setupFlutterErrorTracking', () {
+  // -------------------------------------------------------------------------
+  group('ErrorTrackerMixin – setupFlutterErrorTracking', () {
     late void Function(FlutterErrorDetails)? savedFlutterHandler;
     late bool Function(Object, StackTrace)? savedPlatformHandler;
 
@@ -262,19 +223,21 @@ void main() {
       expect(FlutterError.onError, isNotNull);
     });
 
-    test('FlutterError handler calls trackError with exception details',
-        () async {
-      svc.setupFlutterErrorTracking();
-      final err = Exception('flutter error');
-      final st = StackTrace.current;
-      final details = FlutterErrorDetails(exception: err, stack: st);
-      FlutterError.onError!(details);
-      await pumpEventQueue();
-      expect(transport.logged, hasLength(1));
-      expect(transport.logged.first.level, LogLevel.error);
-      expect(transport.logged.first.message, details.exceptionAsString());
-      expect(transport.logged.first.stackTrace, st);
-    });
+    test(
+      'FlutterError handler calls trackError with exception details',
+      () async {
+        svc.setupFlutterErrorTracking();
+        final err = Exception('flutter error');
+        final st = StackTrace.current;
+        final details = FlutterErrorDetails(exception: err, stack: st);
+        FlutterError.onError!(details);
+        await pumpEventQueue();
+        expect(transport.logged, hasLength(1));
+        expect(transport.logged.first.level, LogLevel.error);
+        expect(transport.logged.first.message, details.exceptionAsString());
+        expect(transport.logged.first.stackTrace, st);
+      },
+    );
 
     test('FlutterError handler calls previously installed handler', () async {
       bool prevCalled = false;
@@ -290,37 +253,43 @@ void main() {
       expect(PlatformDispatcher.instance.onError, isNotNull);
     });
 
-    test('PlatformDispatcher handler calls trackError with fatal=true',
-        () async {
-      svc.setupFlutterErrorTracking();
-      final err = Exception('platform error');
-      final st = StackTrace.current;
-      PlatformDispatcher.instance.onError!(err, st);
-      await pumpEventQueue();
-      expect(transport.logged, hasLength(1));
-      expect(transport.logged.first.level, LogLevel.fatal);
-      expect(transport.logged.first.error, err);
-      expect(transport.logged.first.stackTrace, st);
-    });
+    test(
+      'PlatformDispatcher handler calls trackError with fatal=true',
+      () async {
+        svc.setupFlutterErrorTracking();
+        final err = Exception('platform error');
+        final st = StackTrace.current;
+        PlatformDispatcher.instance.onError!(err, st);
+        await pumpEventQueue();
+        expect(transport.logged, hasLength(1));
+        expect(transport.logged.first.level, LogLevel.fatal);
+        expect(transport.logged.first.error, err);
+        expect(transport.logged.first.stackTrace, st);
+      },
+    );
 
     test('PlatformDispatcher handler returns false', () {
       svc.setupFlutterErrorTracking();
       final result = PlatformDispatcher.instance.onError!(
-          Exception('x'), StackTrace.empty);
+        Exception('x'),
+        StackTrace.empty,
+      );
       expect(result, isFalse);
     });
 
-    test('PlatformDispatcher handler calls previously installed handler',
-        () async {
-      bool prevCalled = false;
-      PlatformDispatcher.instance.onError = (_, __) {
-        prevCalled = true;
-        return true;
-      };
-      svc.setupFlutterErrorTracking();
-      PlatformDispatcher.instance.onError!(Exception('x'), StackTrace.empty);
-      await pumpEventQueue();
-      expect(prevCalled, isTrue);
-    });
+    test(
+      'PlatformDispatcher handler calls previously installed handler',
+      () async {
+        bool prevCalled = false;
+        PlatformDispatcher.instance.onError = (_, __) {
+          prevCalled = true;
+          return true;
+        };
+        svc.setupFlutterErrorTracking();
+        PlatformDispatcher.instance.onError!(Exception('x'), StackTrace.empty);
+        await pumpEventQueue();
+        expect(prevCalled, isTrue);
+      },
+    );
   });
 }
