@@ -51,20 +51,6 @@ For advanced usage — `LoggerMixin`, `ErrorTrackerMixin`, buffered transport, a
 | `sentry_transport` | [![pub package](https://img.shields.io/pub/v/sentry_transport.svg)](https://pub.dev/packages/sentry_transport) [![pub points](https://img.shields.io/pub/points/sentry_transport)](https://pub.dev/packages/sentry_transport/score) | Sentry breadcrumb and error transport |
 | `websocket_transport` | [![pub package](https://img.shields.io/pub/v/websocket_transport.svg)](https://pub.dev/packages/websocket_transport) [![pub points](https://img.shields.io/pub/points/websocket_transport)](https://pub.dev/packages/websocket_transport/score) | WebSocket streaming transport |
 
-## Directory Structure
-
-```text
-packages/
-  core/                   # Core logger (Logger, Console/HTTP, base)
-  file_transport/         # File and rolling file output
-  firebase_transport/     # Firebase Analytics/Crashlytics output
-  android_log_transport/  # Android Logcat output
-  swift_log_transport/    # Apple swift-log output
-  notification_transport/ # Notification output (push/desktop)
-  sentry_transport/       # Sentry breadcrumb and error output
-  websocket_transport/    # WebSocket streaming output
-```
-
 ## Features
 
 - Multiple transports per logger (e.g. file + Firebase + console)
