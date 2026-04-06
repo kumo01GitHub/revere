@@ -5,28 +5,50 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      run_integration_tests:
+        type: boolean
+        default: false
+        description: 'Run integration tests'
 
 jobs:
   core:
     uses: ./.github/workflows/ci-core.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   file_transport:
     uses: ./.github/workflows/ci-file-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   firebase_transport:
     uses: ./.github/workflows/ci-firebase-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   android_log_transport:
     uses: ./.github/workflows/ci-android-log-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   swift_log_transport:
     uses: ./.github/workflows/ci-swift-log-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   notification_transport:
     uses: ./.github/workflows/ci-notification-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   sentry_transport:
     uses: ./.github/workflows/ci-sentry-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
   websocket_transport:
     uses: ./.github/workflows/ci-websocket-transport.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}

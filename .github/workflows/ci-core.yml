@@ -2,6 +2,16 @@ name: CI / Core
 
 on:
   workflow_call:
+    inputs:
+      run_integration_tests:
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      run_integration_tests:
+        type: boolean
+        default: false
+        description: 'Run integration tests'
 
 jobs:
   core:
