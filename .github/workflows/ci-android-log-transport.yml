@@ -14,7 +14,33 @@ on:
         description: 'Run integration tests'
 
 jobs:
-  android_log_transport:
+  # ── Spec tests (always runs) ─────────────────────────────────────────────────
+  spec_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/android_log_transport
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Spec test
+        run: flutter test test
+
+  # ── Integration tests ─────────────────────────────────────────────────────────
+  integration_test:
+    if: inputs.run_integration_tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -46,29 +72,21 @@ jobs:
       - name: Build (dependency resolution)
         run: flutter pub get
 
-      - name: Lint
-        run: flutter analyze
-
-      - name: Spec test
-        run: flutter test test
-
       - name: Build example (dependency resolution)
-        if: inputs.run_integration_tests
         run: flutter pub get
         working-directory: packages/android_log_transport/example
 
       - name: Enable KVM
-        if: inputs.run_integration_tests
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
       - name: Integration test
-        if: inputs.run_integration_tests
         uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
           script: cd packages/android_log_transport/example && flutter test integration_test
+

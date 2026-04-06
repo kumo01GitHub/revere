@@ -14,7 +14,7 @@ on:
         description: 'Run integration tests'
 
 jobs:
-  core:
+  spec_test:
     runs-on: ubuntu-latest
     defaults:
       run:
