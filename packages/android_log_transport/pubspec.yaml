@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
-  revere: ^1.0.0
+  revere: ^1.1.0
 
 dev_dependencies:
   flutter_test:

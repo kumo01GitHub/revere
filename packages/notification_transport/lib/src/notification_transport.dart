@@ -49,10 +49,10 @@ class NotificationTransport extends Transport {
     super.config,
     FlutterLocalNotificationsPlugin? plugin,
     this.onNotificationResponse,
-  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-       format = (config['format'] as String?) ?? '[{level}] {message}',
-       title = (config['title'] as String?) ?? '[{level}] {context}',
-       _groupKey = config['groupKey'] as String? {
+  })  : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+        format = (config['format'] as String?) ?? '[{level}] {message}',
+        title = (config['title'] as String?) ?? '[{level}] {context}',
+        _groupKey = config['groupKey'] as String? {
     if (plugin == null) initialize();
   }
 
@@ -74,8 +74,7 @@ class NotificationTransport extends Transport {
         linux: LinuxInitializationSettings(
           defaultActionName: linuxDefaultActionName,
         ),
-        windows:
-            windowsAppName != null &&
+        windows: windowsAppName != null &&
                 windowsAppUserModelId != null &&
                 windowsGuid != null
             ? WindowsInitializationSettings(
@@ -96,6 +95,8 @@ class NotificationTransport extends Transport {
       LogLevel.info => (Importance.defaultImportance, Priority.defaultPriority),
       LogLevel.warn => (Importance.high, Priority.high),
       LogLevel.error || LogLevel.fatal => (Importance.max, Priority.max),
+      LogLevel.silent =>
+        throw StateError('LogLevel.silent cannot be used to emit events.'),
     };
   }
 
@@ -108,8 +109,7 @@ class NotificationTransport extends Transport {
       android: AndroidNotificationDetails(
         (config['androidChannelId'] as String?) ?? 'revere_logs',
         (config['androidChannelName'] as String?) ?? 'Revere Logs',
-        channelDescription:
-            (config['androidChannelDescription'] as String?) ??
+        channelDescription: (config['androidChannelDescription'] as String?) ??
             'Log notifications',
         importance: importance,
         priority: priority,
