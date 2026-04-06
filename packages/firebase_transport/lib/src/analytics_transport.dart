@@ -43,11 +43,11 @@ class AnalyticsTransport extends Transport {
         .replaceAll('{error}', event.error?.toString() ?? '')
         .replaceAll('{stackTrace}', event.stackTrace?.toString() ?? '');
 
-    final params = <String, dynamic>{
+    final params = <String, Object>{
       'level': event.level.name,
       'message': msg,
-      'context': event.context,
       'timestamp': event.timestamp.toIso8601String(),
+      if (event.context != null) 'context': event.context!,
       if (event.error != null) 'error': event.error.toString(),
       if (event.stackTrace != null) 'stackTrace': event.stackTrace.toString(),
     };
@@ -58,7 +58,7 @@ class AnalyticsTransport extends Transport {
   @protected
   Future<void> dispatchEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) async {
     await FirebaseAnalytics.instance.logEvent(

@@ -4,17 +4,17 @@ import 'package:revere/core.dart';
 import 'package:firebase_transport/analytics_transport.dart';
 
 class _FakeAnalyticsTransport extends AnalyticsTransport {
-  final List<(String, Map<String, dynamic>, AnalyticsCallOptions?)> calls = [];
+  final List<(String, Map<String, Object>, AnalyticsCallOptions?)> calls = [];
 
   _FakeAnalyticsTransport({super.level, super.config});
 
   @override
   Future<void> dispatchEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) async {
-    calls.add((name, parameters, callOptions));
+    calls.add((name, parameters ?? {}, callOptions));
   }
 }
 
@@ -234,7 +234,7 @@ void main() {
 class _ConcreteAnalyticsTransport extends AnalyticsTransport {
   Future<void> callDispatchEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) =>
       dispatchEvent(name, parameters, callOptions);

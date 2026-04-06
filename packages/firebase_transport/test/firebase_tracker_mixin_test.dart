@@ -17,7 +17,7 @@ class _FakeFirebaseTransport extends FirebaseTransport {
   @override
   Future<void> dispatchAnalyticsEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) async {}
 

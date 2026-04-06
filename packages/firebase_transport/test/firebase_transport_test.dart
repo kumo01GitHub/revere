@@ -8,7 +8,7 @@ import 'package:firebase_transport/firebase_transport.dart';
 // ---------------------------------------------------------------------------
 
 class _FakeFirebaseTransport extends FirebaseTransport {
-  final List<(String, Map<String, dynamic>, AnalyticsCallOptions?)>
+  final List<(String, Map<String, Object>, AnalyticsCallOptions?)>
       analyticsCalls = [];
 
   final List<
@@ -26,10 +26,10 @@ class _FakeFirebaseTransport extends FirebaseTransport {
   @override
   Future<void> dispatchAnalyticsEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) async {
-    analyticsCalls.add((name, parameters, callOptions));
+    analyticsCalls.add((name, parameters ?? {}, callOptions));
   }
 
   @override
@@ -271,7 +271,7 @@ void main() {
 class _ConcreteFirebaseTransport extends FirebaseTransport {
   Future<void> callDispatchAnalyticsEvent(
     String name,
-    Map<String, dynamic> parameters,
+    Map<String, Object>? parameters,
     AnalyticsCallOptions? callOptions,
   ) =>
       dispatchAnalyticsEvent(name, parameters, callOptions);
