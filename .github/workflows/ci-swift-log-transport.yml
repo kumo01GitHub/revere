@@ -16,7 +16,7 @@ on:
 jobs:
   # ── Spec tests (always runs) ─────────────────────────────────────────────────
   spec_test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: packages/swift_log_transport
