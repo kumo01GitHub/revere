@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../transport/metrics_transport.dart';
+
+import '../transport/state_transport.dart';
+import '../metrics/metrics_collector.dart';
 
 class MetricsWidget extends StatelessWidget {
-  final MetricsTransport transport;
+  final StateTransport<MetricsData> transport;
   const MetricsWidget({super.key, required this.transport});
 
   @override

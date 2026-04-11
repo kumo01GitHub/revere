@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'metrics_widget.dart';
-import '../transport/metrics_transport.dart';
+
+import '../transport/state_transport.dart';
+import '../metrics/metrics_collector.dart';
 
 class FloatingMetricsButton extends StatefulWidget {
-  final MetricsTransport transport;
+  final StateTransport<MetricsData> transport;
   const FloatingMetricsButton({super.key, required this.transport});
 
   @override

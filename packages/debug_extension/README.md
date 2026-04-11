@@ -1,17 +1,17 @@
 # revere_debug_extension
 
-Flutterプラグインとしてrevereのloggerを拡張し、アプリのメトリクス（CPU/メモリ使用量など）やログをリアルタイムで可視化するデバッグ用拡張です。
+This is a Flutter plugin that extends the revere logger to provide real-time visualization of app metrics (such as CPU and memory usage) and logs for debugging purposes.
 
-## 機能
-- アプリのメモリ・CPU使用量などのmetrics取得
-- revere loggerの拡張による定期的なmetrics取得
-- transport追加によるstateへの出力
-- metrics/logをリアルタイム表示するwidget
-- 古い情報を定期的に削除するstate管理
-- フローティングボタンでwidget表示
-- 通常ログとmetricsの両方を閲覧可能
+## Features
+- Collects app metrics such as memory and CPU usage
+- Periodic metrics collection via revere logger extension
+- Output to state via additional state transport
+- Widgets for real-time display of metrics/logs
+- State management with automatic removal of old entries
+- Floating button to toggle metrics/log widget
+- View both regular logs and metrics in-app
 
-## サポートプラットフォーム
+## Supported Platforms
 - Windows
 - macOS
 - iOS

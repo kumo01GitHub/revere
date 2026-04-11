@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/debug_extension.dart';
-import 'package:flutter/widgets.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -203,7 +203,7 @@ packages:
     source: hosted
     version: "6.1.5+1"
   revere:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../../core"
       relative: true
