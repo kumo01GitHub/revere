@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'swift_log_transport'
-  s.version = '1.1.0'
+  s.version = '2.0.0'
   s.summary          = 'SwiftLog (Apple swift-log) transport for revere logger.'
   s.description      = <<-DESC
     SwiftLog transport for revere logger (via platform channel).
