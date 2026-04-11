@@ -1,6 +1,5 @@
 # Revere Firebase Transport
 
-## Overview
 Provides transports for sending logs to Firebase Analytics and Crashlytics from the revere logger.
 
 Three classes are available:
@@ -36,6 +35,7 @@ await logger.error(                    // → Analytics + Crashlytics (recordErr
 ```
 
 ### `AnalyticsTransport` / `CrashlyticsTransport` (standalone)
+
 ```dart
 import 'package:firebase_transport/analytics_transport.dart';
 import 'package:firebase_transport/crashlytics_transport.dart';
@@ -53,6 +53,7 @@ await logger.info('Hello Firebase!');
 ```
 
 ### `FirebaseTrackerMixin`
+
 Add `with FirebaseTrackerMixin` to any class for action tracking and error reporting with no boilerplate.
 
 ```dart
@@ -91,6 +92,7 @@ class CheckoutService with FirebaseTrackerMixin {
 ```
 
 #### Global error tracking (in `main()`)
+
 ```dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,11 +104,13 @@ void main() {
 ```
 
 ## Configuration
+
 - `name`: Analytics event name template (`{context}`, `{level}` placeholders). Default: `'revere'`. (`AnalyticsTransport`, `FirebaseTransport`)
 - `format`: Message body template (`{level}`, `{message}`, `{context}`, `{timestamp}`, `{error}`, `{stackTrace}`). Default: `'[{level}:{context}] {message}'`. (all transports)
 - `callOptions`: `AnalyticsCallOptions` forwarded to the Analytics SDK. (`AnalyticsTransport`, `FirebaseTransport`)
 
 ### `FirebaseTransport` Crashlytics routing rules
+
 | Condition | Crashlytics call |
 |-----------|-----------------|
 | `LogLevel.error` or `fatal`, **no** `event.error` | `log(message)` |
@@ -115,18 +119,11 @@ void main() {
 | Any level where `event.error != null` | `recordError(error, stackTrace, fatal: false)` |
 
 ## App-side Setup
-Add dependencies to pubspec.yaml:
-```yaml
-dependencies:
-  firebase_transport:
-    path: ../firebase_transport
-  firebase_core: ^latest
-  firebase_analytics: ^latest
-  firebase_crashlytics: ^latest
-```
+
 Initialize Firebase in your app as per the official Firebase Flutter documentation.
 
 ## Additional Information
+
 - Requires Firebase initialization in your app.
 - See Firebase official docs for setup and configuration.
 - For more information, see [revere](https://github.com/kumo01GitHub/revere/).

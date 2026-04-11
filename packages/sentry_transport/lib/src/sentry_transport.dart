@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:revere/core.dart';
-import 'package:sentry_flutter/sentry_flutter.dart' hide Transport;
+import 'package:sentry/sentry.dart' hide Transport;
 
 /// Sends log events to Sentry.
 ///

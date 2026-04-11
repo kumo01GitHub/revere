@@ -89,4 +89,3 @@ jobs:
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
           script: cd packages/android_log_transport/example && flutter test integration_test
-

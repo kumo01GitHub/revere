@@ -1,9 +1,9 @@
 # Revere Notification Transport
 
-## Overview
 Sends logs as push notifications (mobile) and to the notification center (desktop) using `flutter_local_notifications`.
 
 ## Usage
+
 ```dart
 import 'package:notification_transport/notification_transport.dart';
 import 'package:revere/core.dart';
@@ -33,12 +33,14 @@ logger.addTransport(NotificationTransport(plugin: plugin));
 ## Configuration
 
 ### General
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `format` | `String` | `'[{level}] {message}'` | Notification body template. Tokens: `{level}`, `{message}`, `{timestamp}`, `{error}`, `{stackTrace}`, `{context}` |
 | `title` | `String` | `'[{level}] {context}'` | Notification title template. Tokens: `{level}`, `{context}` |
 
 ### Android
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `androidChannelId` | `String` | `'revere_logs'` | Notification channel ID |
@@ -54,6 +56,7 @@ logger.addTransport(NotificationTransport(plugin: plugin));
 | `androidEnableVibration` | `bool` | `true` | Vibrate with notification |
 
 ### iOS / macOS (Darwin)
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `darwinPresentAlert` | `bool?` | `null` | Show alert when app is in foreground (null = use initialization default) |
@@ -65,20 +68,17 @@ logger.addTransport(NotificationTransport(plugin: plugin));
 | `darwinThreadIdentifier` | `String?` | `null` | Thread identifier for notification grouping |
 
 ### Linux
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `linuxDefaultActionName` | `String` | `'Open'` | Label for the default notification action (also used in initialization) |
 
 ## App-side Setup
-Add dependency in your app's `pubspec.yaml`:
-```yaml
-dependencies:
-	notification_transport:
-		path: ../notification_transport
-	flutter_local_notifications: ^latest
-```
+
+N/A
 
 ## Additional Information
+
 - Works on Android, iOS, macOS, Linux, and Windows.
 - Uses flutter_local_notifications for cross-platform support.
 - For advanced notification features, refer to the flutter_local_notifications documentation.

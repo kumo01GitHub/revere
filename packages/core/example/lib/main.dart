@@ -59,27 +59,24 @@ class PaymentService with ErrorTrackerMixin {
   String get trackerContext => 'PaymentService';
 
   /// withTracking: logs action entry at info level, records any thrown error.
-  Future<void> purchase(String itemId, double price) => withTracking(
-        'purchase',
-        () async {
-          await Future.delayed(const Duration(milliseconds: 200));
-          if (price <= 0) throw ArgumentError('price must be positive');
-        },
-        params: {'item_id': itemId, 'price': price},
-      );
+  Future<void> purchase(String itemId, double price) =>
+      withTracking('purchase', () async {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (price <= 0) throw ArgumentError('price must be positive');
+      }, params: {'item_id': itemId, 'price': price});
 
   /// guarded: wraps body in try/catch; records error and re-throws.
   Future<void> refund(String orderId) => guarded(() async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        throw StateError('refund service unavailable for order $orderId');
-      });
+    await Future.delayed(const Duration(milliseconds: 100));
+    throw StateError('refund service unavailable for order $orderId');
+  });
 
   /// trackError: records an arbitrary caught error directly.
   Future<void> reportManualError() => trackError(
-        Exception('manual payment error'),
-        stackTrace: StackTrace.current,
-        message: 'Manually reported payment error',
-      );
+    Exception('manual payment error'),
+    stackTrace: StackTrace.current,
+    message: 'Manually reported payment error',
+  );
 }
 
 // ===========================================================================
@@ -92,11 +89,6 @@ void main() {
   LoggerMixin.logger.addTransport(
     PrettyConsoleTransport(level: LogLevel.trace),
   );
-
-  // setupFlutterErrorTracking installs FlutterError.onError and
-  // PlatformDispatcher.instance.onError so uncaught errors are automatically
-  // recorded. Call this once after WidgetsFlutterBinding.ensureInitialized().
-  PaymentService().setupFlutterErrorTracking();
 
   runApp(const RevereExampleApp());
 }
@@ -155,10 +147,7 @@ class _ExamplePageState extends State<ExamplePage>
       ),
       body: TabBarView(
         controller: _tabs,
-        children: const [
-          _LoggerMixinTab(),
-          _ErrorTrackerTab(),
-        ],
+        children: const [_LoggerMixinTab(), _ErrorTrackerTab()],
       ),
     );
   }
@@ -215,8 +204,7 @@ class _LoggerMixinTabState extends State<_LoggerMixinTab> {
         ),
         _ActionButton(
           label: 'deleteUser("alice")  →  i()',
-          onPressed: () =>
-              _run(() => _repo.deleteUser('alice'), 'deleteUser'),
+          onPressed: () => _run(() => _repo.deleteUser('alice'), 'deleteUser'),
         ),
       ],
     );
@@ -303,10 +291,9 @@ class _TabBody extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Watch the debug console for output.',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Colors.grey),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
           ),
           const Divider(height: 32),
           ...children,

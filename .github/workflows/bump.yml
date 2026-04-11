@@ -9,13 +9,14 @@ on:
         type: choice
         options:
           - core
+          - flutter_extension
           - file_transport
+          - websocket_transport
           - firebase_transport
           - android_log_transport
           - swift_log_transport
           - notification_transport
           - sentry_transport
-          - websocket_transport
       bump:
         description: "Bump type"
         required: true
@@ -42,13 +43,14 @@ jobs:
         run: |
           case "${{ inputs.package }}" in
             core)                   DIR="packages/core";                  TAG_PREFIX="core-v" ;;
-            android_log_transport)  DIR="packages/android_log_transport"; TAG_PREFIX="android-log-transport-v" ;;
+            flutter_extension)      DIR="packages/flutter_extension";      TAG_PREFIX="flutter-extension-v" ;;
             file_transport)         DIR="packages/file_transport";         TAG_PREFIX="file-transport-v" ;;
-            firebase_transport)     DIR="packages/firebase_transport";     TAG_PREFIX="firebase-transport-v" ;;
-            notification_transport) DIR="packages/notification_transport"; TAG_PREFIX="notification-transport-v" ;;
-            swift_log_transport)    DIR="packages/swift_log_transport";    TAG_PREFIX="swift-log-transport-v" ;;
-            sentry_transport)       DIR="packages/sentry_transport";       TAG_PREFIX="sentry-transport-v" ;;
             websocket_transport)    DIR="packages/websocket_transport";    TAG_PREFIX="websocket-transport-v" ;;
+            firebase_transport)     DIR="packages/firebase_transport";     TAG_PREFIX="firebase-transport-v" ;;
+            android_log_transport)  DIR="packages/android_log_transport"; TAG_PREFIX="android-log-transport-v" ;;
+            swift_log_transport)    DIR="packages/swift_log_transport";    TAG_PREFIX="swift-log-transport-v" ;;
+            notification_transport) DIR="packages/notification_transport"; TAG_PREFIX="notification-transport-v" ;;
+            sentry_transport)       DIR="packages/sentry_transport";       TAG_PREFIX="sentry-transport-v" ;;
           esac
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"
           echo "tag_prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"

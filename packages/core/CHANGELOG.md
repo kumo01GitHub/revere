@@ -1,3 +1,8 @@
+## 2.0.0
+
+* feat: remove flutter dependency.
+* chore: cleanup pubspec.
+
 ## 1.1.0
 
 * feat: add `LogLevel.silent` — a threshold-only sentinel that suppresses all output from a transport when set as its minimum level.

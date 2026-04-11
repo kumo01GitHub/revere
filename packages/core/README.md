@@ -1,7 +1,5 @@
 # Revere Core
 
-## Overview
-
 The core package for the Revere ecosystem. Provides `Logger`, `Transport`, `LogLevel`, `LogEvent`, built-in transports, and two opt-in mixins for class-level logging and automatic error tracking.
 
 ## Usage
@@ -205,23 +203,6 @@ Future<void> fetchUser(String id) => guarded(() async {
   final data = await api.getUser(id);
   setState(() => _user = data);
 });
-```
-
-### setupFlutterErrorTracking
-
-Installs `FlutterError.onError` and `PlatformDispatcher.instance.onError` handlers. Call once at startup.
-
-```dart
-class AppErrorTracker with ErrorTrackerMixin {
-  @override
-  Logger get logger => MyApp.logger;
-}
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  AppErrorTracker().setupFlutterErrorTracking();
-  runApp(const MyApp());
-}
 ```
 
 ## How to Extend

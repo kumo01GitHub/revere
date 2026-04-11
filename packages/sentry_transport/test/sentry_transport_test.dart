@@ -1,12 +1,12 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:revere/core.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry/sentry.dart';
 import 'package:sentry_transport/sentry_transport.dart';
 
 class _FakeSentryTransport extends SentryTransport {
   final List<Breadcrumb> breadcrumbs = [];
   final List<({Object exception, StackTrace? stackTrace, bool fatal})>
-  exceptions = [];
+      exceptions = [];
 
   _FakeSentryTransport({super.level, super.config});
 

@@ -1,3 +1,9 @@
+## 2.0.0
+
+* chore: update revere dependency to ^2.0.0.
+* chore: cleanup pubspec.
+* chore: remove unused example spec test.
+
 ## 1.1.0
 
 * chore: update revere dependency to ^1.1.0.

@@ -196,10 +196,9 @@ packages:
   revere:
     dependency: "direct main"
     description:
-      name: revere
-      sha256: "12a2fb86c5a32ec85cf7ffc7f00ff3f30d550cf16fbe7cae01b0e0ee1336a4c2"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../core"
+      relative: true
+    source: path
     version: "1.1.0"
   sky_engine:
     dependency: transitive

@@ -35,4 +35,4 @@ jobs:
         run: flutter analyze
 
       - name: Spec test
-        run: flutter test test
+        run: flutter test

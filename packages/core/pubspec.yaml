@@ -7,14 +7,10 @@ repository: https://github.com/kumo01GitHub/revere/tree/main/packages/core
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
-  flutter: ">=1.17.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   meta: ^1.9.1
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
+  test: ^1.24.0
+  lints: ^3.0.0

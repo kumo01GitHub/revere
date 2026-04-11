@@ -43,13 +43,14 @@ For advanced usage — `LoggerMixin`, `ErrorTrackerMixin`, buffered transport, a
 | Package | Status | Role |
 |---|---|---|
 | `revere` | [![pub package](https://img.shields.io/pub/v/revere.svg)](https://pub.dev/packages/revere) [![pub points](https://img.shields.io/pub/points/revere)](https://pub.dev/packages/revere/score) | Core logger primitives: `Logger`, `Transport`, `LogEvent`, `LogLevel`, built-in console and HTTP transports |
+| `revere_flutter_extension` | [![pub package](https://img.shields.io/pub/v/revere_flutter_extension.svg)](https://pub.dev/packages/revere_flutter_extension) [![pub points](https://img.shields.io/pub/points/revere_flutter_extension)](https://pub.dev/packages/revere_flutter_extension/score) | Flutter error tracking and integration (global error hooks, etc.) are provided in this package. |
 | `file_transport` | [![pub package](https://img.shields.io/pub/v/file_transport.svg)](https://pub.dev/packages/file_transport) [![pub points](https://img.shields.io/pub/points/file_transport)](https://pub.dev/packages/file_transport/score) | File output and rolling file output |
+| `websocket_transport` | [![pub package](https://img.shields.io/pub/v/websocket_transport.svg)](https://pub.dev/packages/websocket_transport) [![pub points](https://img.shields.io/pub/points/websocket_transport)](https://pub.dev/packages/websocket_transport/score) | WebSocket streaming transport |
 | `firebase_transport` | [![pub package](https://img.shields.io/pub/v/firebase_transport.svg)](https://pub.dev/packages/firebase_transport) [![pub points](https://img.shields.io/pub/points/firebase_transport)](https://pub.dev/packages/firebase_transport/score) | Firebase Analytics and Crashlytics transports |
 | `android_log_transport` | [![pub package](https://img.shields.io/pub/v/android_log_transport.svg)](https://pub.dev/packages/android_log_transport) [![pub points](https://img.shields.io/pub/points/android_log_transport)](https://pub.dev/packages/android_log_transport/score) | Android Logcat transport |
 | `swift_log_transport` | [![pub package](https://img.shields.io/pub/v/swift_log_transport.svg)](https://pub.dev/packages/swift_log_transport) [![pub points](https://img.shields.io/pub/points/swift_log_transport)](https://pub.dev/packages/swift_log_transport/score) | Apple swift-log transport for iOS/macOS |
 | `notification_transport` | [![pub package](https://img.shields.io/pub/v/notification_transport.svg)](https://pub.dev/packages/notification_transport) [![pub points](https://img.shields.io/pub/points/notification_transport)](https://pub.dev/packages/notification_transport/score) | Local notification transport (mobile/desktop) |
 | `sentry_transport` | [![pub package](https://img.shields.io/pub/v/sentry_transport.svg)](https://pub.dev/packages/sentry_transport) [![pub points](https://img.shields.io/pub/points/sentry_transport)](https://pub.dev/packages/sentry_transport/score) | Sentry breadcrumb and error transport |
-| `websocket_transport` | [![pub package](https://img.shields.io/pub/v/websocket_transport.svg)](https://pub.dev/packages/websocket_transport) [![pub points](https://img.shields.io/pub/points/websocket_transport)](https://pub.dev/packages/websocket_transport/score) | WebSocket streaming transport |
 
 ## Features
 
@@ -67,7 +68,3 @@ See each package README for setup, configuration, and platform-specific notes.
 
 Implement the `Transport` abstract class and add it via `logger.addTransport()`.
 Details and a worked example are in the [revere package README](packages/core/README.md).
-
-## Testing
-
-Run `flutter test` in each package to verify logger and transports.
