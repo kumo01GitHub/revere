@@ -1,5 +1,5 @@
 group = "io.kumo01.revere"
-version = "1.1.0"
+version = "2.0.0"
 
 buildscript {
     val kotlinVersion = "2.2.20"
