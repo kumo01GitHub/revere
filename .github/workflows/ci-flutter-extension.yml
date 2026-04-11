@@ -1,0 +1,38 @@
+name: CI / Flutter Extension
+
+on:
+  workflow_call:
+    inputs:
+      run_integration_tests:
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      run_integration_tests:
+        type: boolean
+        default: false
+        description: 'Run integration tests'
+
+jobs:
+  spec_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/flutter_extension
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Lint
+        run: flutter analyze
+
+      - name: Spec test
+        run: flutter test test

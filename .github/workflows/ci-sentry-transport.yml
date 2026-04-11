@@ -23,16 +23,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
-        with:
-          channel: stable
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
 
       - name: Build (dependency resolution)
-        run: flutter pub get
+        run: dart pub get
 
       - name: Lint
-        run: flutter analyze
+        run: dart analyze --fatal-infos --fatal-warnings
 
       - name: Spec test
-        run: flutter test
+        run: dart test --reporter=expanded

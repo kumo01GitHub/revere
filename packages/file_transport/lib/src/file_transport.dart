@@ -33,7 +33,7 @@ class FileTransport extends Transport {
   Future<void> emitLog(LogEvent event) async {
     final line = _format(event);
     final file = File(filePath);
-    await file.writeAsString(line + '\n', mode: FileMode.append, flush: true);
+    await file.writeAsString('$line\n', mode: FileMode.append, flush: true);
   }
 
   String _format(LogEvent event) {

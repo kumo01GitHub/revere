@@ -1,5 +1,5 @@
 import 'package:revere/core.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 class _CollectingTransport extends Transport {
   final List<LogEvent> received = [];
@@ -35,7 +35,7 @@ void main() {
     test('loggerContext differs between unrelated classes', () {
       final a = _ServiceA();
       final b = _ServiceB();
-      expect(a.loggerContext, isNot(b.loggerContext));
+      expect(a.loggerContext, isNot(equals(b.loggerContext)));
     });
 
     // --- shortcut methods produce correct levels ---

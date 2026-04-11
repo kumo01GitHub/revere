@@ -23,7 +23,7 @@ class RollingFile {
     if (await file.exists() && await file.length() + line.length > maxBytes) {
       await _rollFiles();
     }
-    await file.writeAsString(line + '\n', mode: FileMode.append, flush: true);
+    await file.writeAsString('$line\n', mode: FileMode.append, flush: true);
   }
 
   Future<void> _rollFiles() async {

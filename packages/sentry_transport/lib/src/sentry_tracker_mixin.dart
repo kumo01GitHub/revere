@@ -1,7 +1,3 @@
-import 'dart:async' show unawaited;
-import 'dart:ui' show PlatformDispatcher;
-
-import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
 import 'package:revere/core.dart';
 import 'sentry_transport.dart';
 
@@ -119,46 +115,5 @@ mixin SentryTrackerMixin {
       await trackError(e, stackTrace: st, fatal: fatal);
       rethrow;
     }
-  }
-
-  /// Installs global Flutter error handlers that forward all uncaught errors
-  /// to Sentry via [sentryTransport].
-  ///
-  /// Call this once in `main()` after `WidgetsFlutterBinding.ensureInitialized()`:
-  ///
-  /// ```dart
-  /// void main() {
-  ///   WidgetsFlutterBinding.ensureInitialized();
-  ///   MyService().setupFlutterErrorTracking();
-  ///   runApp(const MyApp());
-  /// }
-  /// ```
-  ///
-  /// Hooks installed:
-  /// - [FlutterError.onError] — Flutter framework / widget build errors.
-  /// - [PlatformDispatcher.instance.onError] — uncaught Dart async errors.
-  ///
-  /// Any previously installed handler is preserved and called first.
-  void setupFlutterErrorTracking() {
-    final prevFlutter = FlutterError.onError;
-    FlutterError.onError = (FlutterErrorDetails details) {
-      prevFlutter?.call(details);
-      unawaited(
-        trackError(
-          details.exception,
-          stackTrace: details.stack,
-          message: details.exceptionAsString(),
-        ),
-      );
-    };
-
-    final prevPlatform = PlatformDispatcher.instance.onError;
-    PlatformDispatcher.instance.onError = (error, stack) {
-      prevPlatform?.call(error, stack);
-      unawaited(trackError(error, stackTrace: stack, fatal: true));
-      // Return false so the runtime still treats this as unhandled and
-      // terminates / reports the crash normally.
-      return false;
-    };
   }
 }

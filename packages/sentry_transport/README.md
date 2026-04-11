@@ -1,6 +1,5 @@
 # Revere Sentry Transport
 
-## Overview
 Provides a transport for sending logs to [Sentry](https://sentry.io/) from the revere logger.
 
 Log events are routed as follows:
@@ -14,6 +13,7 @@ Log events are routed as follows:
 ## Usage
 
 ### `SentryTransport`
+
 ```dart
 import 'package:sentry_transport/sentry_transport.dart';
 import 'package:revere/core.dart';
@@ -30,6 +30,7 @@ await logger.fatal(                           // → captureException (fatal=tru
 ```
 
 ### `SentryTrackerMixin`
+
 Add `with SentryTrackerMixin` to any class for breadcrumb tracking and error reporting with no boilerplate.
 
 ```dart
@@ -57,32 +58,16 @@ class CheckoutService with SentryTrackerMixin {
 }
 ```
 
-Install uncaught error handlers in `main()` to automatically send all
-unhandled Flutter and Dart async errors to Sentry:
-
-```dart
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  MyService().setupFlutterErrorTracking();
-  runApp(const MyApp());
-}
-```
-
 ## Configuration
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `format` | `String` | `'[{level}:{context}] {message}'` | Breadcrumb message template. Tokens: `{level}`, `{message}`, `{timestamp}`, `{context}`, `{error}`, `{stackTrace}` |
 
 ## App-side Setup
-Add dependency in your app's `pubspec.yaml`:
-```yaml
-dependencies:
-  sentry_transport:
-    path: ../sentry_transport
-  sentry_flutter: ^8.0.0
-```
 
-Initialise Sentry before using the transport (see [sentry_flutter docs](https://docs.sentry.io/platforms/flutter/)).
+Initialise Sentry before using the transport (see [sentry docs](https://docs.sentry.io/platforms/dart/)).
 
 ## Additional Information
+
 - For more information, see [revere](https://github.com/kumo01GitHub/revere/).

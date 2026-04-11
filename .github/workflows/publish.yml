@@ -21,13 +21,14 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           case "$TAG" in
             core-v*)                   DIR="packages/core" ;;
-            android-log-transport-v*)  DIR="packages/android_log_transport" ;;
+            flutter-extension-v*)      DIR="packages/flutter_extension" ;;
             file-transport-v*)         DIR="packages/file_transport" ;;
-            firebase-transport-v*)     DIR="packages/firebase_transport" ;;
-            notification-transport-v*) DIR="packages/notification_transport" ;;
-            swift-log-transport-v*)    DIR="packages/swift_log_transport" ;;
-            sentry-transport-v*)       DIR="packages/sentry_transport" ;;
             websocket-transport-v*)    DIR="packages/websocket_transport" ;;
+            firebase-transport-v*)     DIR="packages/firebase_transport" ;;
+            android-log-transport-v*)  DIR="packages/android_log_transport" ;;
+            swift-log-transport-v*)    DIR="packages/swift_log_transport" ;;
+            notification-transport-v*) DIR="packages/notification_transport" ;;
+            sentry-transport-v*)       DIR="packages/sentry_transport" ;;
             *) echo "Unknown tag pattern: $TAG" && exit 1 ;;
           esac
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"

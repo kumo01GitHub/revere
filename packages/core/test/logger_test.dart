@@ -1,5 +1,5 @@
 import 'package:revere/core.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 class _CollectingTransport extends Transport {
   final List<LogEvent> received = [];

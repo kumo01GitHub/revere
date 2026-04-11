@@ -1,7 +1,4 @@
-import 'dart:ui' show PlatformDispatcher;
-
-import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:revere/core.dart';
 
 // ---------------------------------------------------------------------------
@@ -202,94 +199,5 @@ void main() {
     });
   });
 
-  // -------------------------------------------------------------------------
-  group('ErrorTrackerMixin – setupFlutterErrorTracking', () {
-    late void Function(FlutterErrorDetails)? savedFlutterHandler;
-    late bool Function(Object, StackTrace)? savedPlatformHandler;
-
-    setUp(() {
-      savedFlutterHandler = FlutterError.onError;
-      savedPlatformHandler = PlatformDispatcher.instance.onError;
-      transport.logged.clear();
-    });
-
-    tearDown(() {
-      FlutterError.onError = savedFlutterHandler;
-      PlatformDispatcher.instance.onError = savedPlatformHandler;
-    });
-
-    test('installs a FlutterError.onError handler', () {
-      svc.setupFlutterErrorTracking();
-      expect(FlutterError.onError, isNotNull);
-    });
-
-    test(
-      'FlutterError handler calls trackError with exception details',
-      () async {
-        svc.setupFlutterErrorTracking();
-        final err = Exception('flutter error');
-        final st = StackTrace.current;
-        final details = FlutterErrorDetails(exception: err, stack: st);
-        FlutterError.onError!(details);
-        await pumpEventQueue();
-        expect(transport.logged, hasLength(1));
-        expect(transport.logged.first.level, LogLevel.error);
-        expect(transport.logged.first.message, details.exceptionAsString());
-        expect(transport.logged.first.stackTrace, st);
-      },
-    );
-
-    test('FlutterError handler calls previously installed handler', () async {
-      bool prevCalled = false;
-      FlutterError.onError = (_) => prevCalled = true;
-      svc.setupFlutterErrorTracking();
-      FlutterError.onError!(FlutterErrorDetails(exception: Exception('x')));
-      await pumpEventQueue();
-      expect(prevCalled, isTrue);
-    });
-
-    test('installs a PlatformDispatcher.onError handler', () {
-      svc.setupFlutterErrorTracking();
-      expect(PlatformDispatcher.instance.onError, isNotNull);
-    });
-
-    test(
-      'PlatformDispatcher handler calls trackError with fatal=true',
-      () async {
-        svc.setupFlutterErrorTracking();
-        final err = Exception('platform error');
-        final st = StackTrace.current;
-        PlatformDispatcher.instance.onError!(err, st);
-        await pumpEventQueue();
-        expect(transport.logged, hasLength(1));
-        expect(transport.logged.first.level, LogLevel.fatal);
-        expect(transport.logged.first.error, err);
-        expect(transport.logged.first.stackTrace, st);
-      },
-    );
-
-    test('PlatformDispatcher handler returns false', () {
-      svc.setupFlutterErrorTracking();
-      final result = PlatformDispatcher.instance.onError!(
-        Exception('x'),
-        StackTrace.empty,
-      );
-      expect(result, isFalse);
-    });
-
-    test(
-      'PlatformDispatcher handler calls previously installed handler',
-      () async {
-        bool prevCalled = false;
-        PlatformDispatcher.instance.onError = (_, _) {
-          prevCalled = true;
-          return true;
-        };
-        svc.setupFlutterErrorTracking();
-        PlatformDispatcher.instance.onError!(Exception('x'), StackTrace.empty);
-        await pumpEventQueue();
-        expect(prevCalled, isTrue);
-      },
-    );
-  });
+  // Flutter error tracking tests have been moved to revere_flutter_extension.
 }

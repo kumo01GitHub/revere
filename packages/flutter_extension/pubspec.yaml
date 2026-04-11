@@ -1,0 +1,21 @@
+name: revere_flutter_extension
+description: "Flutter integration for revere core logging. Provides error tracking and Flutter error hooks."
+version: 2.0.0
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/flutter_extension
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  revere: ^2.0.0
+  meta: ^1.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
