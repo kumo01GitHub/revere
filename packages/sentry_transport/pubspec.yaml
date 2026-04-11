@@ -1,6 +1,6 @@
 name: sentry_transport
 description: Sentry transport for revere logger. Routes error and fatal log events to Sentry via captureException, and lower-level events as breadcrumbs.
-version: 1.1.0
+version: 2.0.0
 
 homepage: https://github.com/kumo01GitHub/revere
 repository: https://github.com/kumo01GitHub/revere/tree/main/packages/sentry_transport
