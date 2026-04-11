@@ -1,46 +1,37 @@
 import 'package:flutter/material.dart';
-
 import 'package:revere_debug_extension/revere_debug_extension.dart';
 import 'package:revere/pretty_console_transport.dart';
 
+import 'package:revere/core.dart';
+
 void main() {
-  // Add StateTransport (UI) and PrettyConsoleTransport (console) to metrics logger
-  final metricsTransport = StateTransport<MetricsData>(maxLength: 100);
-  MetricsLogger().addTransport(metricsTransport);
-  MetricsLogger().addTransport(PrettyConsoleTransport());
-  runApp(MyApp(metricsTransport: metricsTransport));
+  final metricsLogger = MetricsLogger();
+  metricsLogger.addTransport(PrettyConsoleTransport());
+  final normalLogger = Logger();
+  normalLogger.addTransport(PrettyConsoleTransport());
+  runApp(MyApp(metricsLogger: metricsLogger, normalLogger: normalLogger));
 }
 
 class MyApp extends StatelessWidget {
-  final StateTransport<MetricsData> metricsTransport;
-  const MyApp({super.key, required this.metricsTransport});
+  final MetricsLogger metricsLogger;
+  final Logger normalLogger;
+  const MyApp({
+    Key? key,
+    required this.metricsLogger,
+    required this.normalLogger,
+  }) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: MyHomePage(
         title: 'Flutter Demo Home Page',
-        metricsTransport: metricsTransport,
+        metricsLogger: metricsLogger,
+        normalLogger: normalLogger,
       ),
     );
   }
@@ -48,11 +39,13 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   final String title;
-  final StateTransport<MetricsData> metricsTransport;
+  final MetricsLogger metricsLogger;
+  final Logger normalLogger;
   const MyHomePage({
     Key? key,
     required this.title,
-    required this.metricsTransport,
+    required this.metricsLogger,
+    required this.normalLogger,
   }) : super(key: key);
 
   @override
@@ -60,18 +53,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final StateTransport<MetricsData> _metricsTransport;
+  bool _collecting = false;
 
   @override
   void initState() {
     super.initState();
-    _metricsTransport = widget.metricsTransport;
-    MetricsLogger().start();
+  }
+
+  void _toggleMetricsCollection() {
+    setState(() {
+      if (_collecting) {
+        widget.metricsLogger.stop();
+        widget.normalLogger.info(
+          'Metrics collection stopped at ${DateTime.now()}',
+        );
+        _collecting = false;
+      } else {
+        widget.metricsLogger.start();
+        widget.normalLogger.info(
+          'Metrics collection started at ${DateTime.now()}',
+        );
+        _collecting = true;
+      }
+    });
   }
 
   @override
   void dispose() {
-    MetricsLogger().stop();
+    if (_collecting) widget.metricsLogger.stop();
     super.dispose();
   }
 
@@ -83,9 +92,31 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Stack(
-        children: [FloatingMetricsButton(transport: _metricsTransport)],
+        children: [
+          Positioned(
+            left: 16,
+            bottom: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: _toggleMetricsCollection,
+                  child: Text(
+                    _collecting
+                        ? 'Stop Metrics Collection'
+                        : 'Start Metrics Collection',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // DebugWidgetをStackの一番最後（最前面）に配置
+          FloatingMetricsButton(
+            loggers: [widget.normalLogger, widget.metricsLogger.logger],
+            tabNames: ['Normal', 'Metrics'],
+          ),
+        ],
       ),
-      // Remove default floatingActionButton to avoid overlap with custom metrics button
     );
   }
 }

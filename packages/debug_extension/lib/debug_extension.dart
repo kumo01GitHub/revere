@@ -1,6 +1,6 @@
 library revere_debug_extension;
 
-export 'src/ui/metrics_widget.dart';
+export 'src/ui/debug_widget.dart';
 export 'src/ui/floating_button.dart';
 export 'src/transport/state_transport.dart';
 export 'src/logger/metrics_logger.dart';

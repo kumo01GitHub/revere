@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:revere/core.dart';
 
 class MetricsLogger {
+  Logger get logger => _logger;
   static final MetricsLogger _instance = MetricsLogger._internal();
   factory MetricsLogger() => _instance;
   MetricsLogger._internal();
@@ -17,10 +18,16 @@ class MetricsLogger {
   /// Public stream getter for metrics
   Stream<MetricsData> get metricsStream => _collector.metricsStream;
 
-  void start() {
-    _collector.start();
+  /// interval: ログ出力間隔
+  /// formatter: メッセージフォーマット (デフォルトは metrics.toString())
+  void start({
+    Duration interval = const Duration(seconds: 2),
+    String Function(MetricsData)? formatter,
+  }) {
+    _collector.start(interval: interval);
     _subscription = _collector.metricsStream.listen((metrics) {
-      _logger.info(metrics);
+      final msg = formatter != null ? formatter(metrics) : metrics.toString();
+      _logger.info(msg);
     });
   }
 

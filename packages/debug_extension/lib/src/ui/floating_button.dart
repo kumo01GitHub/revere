@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
-import 'metrics_widget.dart';
-
-import '../transport/state_transport.dart';
-import '../metrics/metrics_collector.dart';
+import 'package:revere/core.dart';
+import './debug_widget.dart';
 
 class FloatingMetricsButton extends StatefulWidget {
-  final StateTransport<MetricsData> transport;
-  const FloatingMetricsButton({super.key, required this.transport});
+  final List<Logger> loggers;
+  final List<String>? tabNames;
+  final int maxLength;
+  const FloatingMetricsButton({
+    super.key,
+    required this.loggers,
+    this.tabNames,
+    this.maxLength = 100,
+  });
 
   @override
   State<FloatingMetricsButton> createState() => _FloatingMetricsButtonState();
 }
 
 class _FloatingMetricsButtonState extends State<FloatingMetricsButton> {
-  bool _showMetrics = false;
+  bool _showDebug = false;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (_showMetrics)
+        if (_showDebug)
           Positioned(
             right: 16,
-            bottom: 80,
+            top: 80,
+            bottom: 80, // ボタンの上までで制約
             child: SizedBox(
-              width: 300,
-              height: 400,
+              width: 400,
               child: Card(
-                child: MetricsWidget(transport: widget.transport),
+                child: DebugWidget(
+                  loggers: widget.loggers,
+                  tabNames: widget.tabNames,
+                  maxLength: widget.maxLength,
+                ),
               ),
             ),
           ),
@@ -35,8 +44,8 @@ class _FloatingMetricsButtonState extends State<FloatingMetricsButton> {
           right: 16,
           bottom: 16,
           child: FloatingActionButton(
-            onPressed: () => setState(() => _showMetrics = !_showMetrics),
-            child: Icon(_showMetrics ? Icons.close : Icons.bar_chart),
+            onPressed: () => setState(() => _showDebug = !_showDebug),
+            child: Icon(_showDebug ? Icons.close : Icons.bug_report),
           ),
         ),
       ],
