@@ -22,7 +22,7 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1100));
     collector.stop();
     await sub.cancel();
-    expect(transport.state.isNotEmpty, true);
+    expect(transport.state.value.isNotEmpty, true);
   });
 
   test('MetricsCollector can be started and stopped multiple times', () async {
@@ -36,6 +36,6 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 500));
     collector.stop();
     await sub.cancel();
-    expect(transport.state.isNotEmpty, true);
+    expect(transport.state.value.isNotEmpty, true);
   });
 }

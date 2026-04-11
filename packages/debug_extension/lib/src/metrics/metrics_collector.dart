@@ -31,6 +31,13 @@ class MetricsData {
     required this.memoryUsage,
     required this.timestamp,
   });
+
+  @override
+  String toString() {
+    return 'CPU: '
+        '${cpuUsage != null ? '${cpuUsage!.toStringAsFixed(2)}%' : 'N/A'}, '
+        'Memory: $memoryUsage bytes, Time: $timestamp';
+  }
 }
 
 abstract class PlatformMetricsCollector {

@@ -14,11 +14,11 @@ void main() {
           cpuUsage: 3.0, memoryUsage: 300, timestamp: DateTime.now());
       transport.add(data1);
       transport.add(data2);
-      expect(transport.state.length, 2);
+      expect(transport.state.value.length, 2);
       transport.add(data3);
-      expect(transport.state.length, 2);
-      expect(transport.state.first, data2);
-      expect(transport.state.last, data3);
+      expect(transport.state.value.length, 2);
+      expect(transport.state.value.first, data2);
+      expect(transport.state.value.last, data3);
     });
   });
 }
