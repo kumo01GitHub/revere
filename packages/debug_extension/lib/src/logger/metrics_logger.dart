@@ -1,6 +1,6 @@
 import '../metrics/metrics_collector.dart';
 import '../metrics/metrics_plugin.dart';
-import '../metrics/metrics_core.dart';
+import '../metrics/metrics_data.dart';
 import 'dart:async';
 import 'package:revere/core.dart';
 

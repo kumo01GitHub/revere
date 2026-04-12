@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'metrics_core.dart';
 import 'metrics_plugin.dart';
+import 'metrics_data.dart';
 
 /// Collects metrics periodically and exposes them as a stream.
 class MetricsCollector {

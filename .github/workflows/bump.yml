@@ -10,6 +10,7 @@ on:
         options:
           - core
           - flutter_extension
+          - debug_extension
           - file_transport
           - websocket_transport
           - firebase_transport
@@ -44,6 +45,7 @@ jobs:
           case "${{ inputs.package }}" in
             core)                   DIR="packages/core";                  TAG_PREFIX="core-v" ;;
             flutter_extension)      DIR="packages/flutter_extension";      TAG_PREFIX="flutter-extension-v" ;;
+            debug_extension)        DIR="packages/debug_extension";        TAG_PREFIX="debug-extension-v" ;;
             file_transport)         DIR="packages/file_transport";         TAG_PREFIX="file-transport-v" ;;
             websocket_transport)    DIR="packages/websocket_transport";    TAG_PREFIX="websocket-transport-v" ;;
             firebase_transport)     DIR="packages/firebase_transport";     TAG_PREFIX="firebase-transport-v" ;;

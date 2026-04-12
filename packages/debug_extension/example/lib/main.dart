@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
   final MetricsLogger metricsLogger;
   final Logger normalLogger;
   const MyApp({
-    Key? key,
+    super.key,
     required this.metricsLogger,
     required this.normalLogger,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +42,11 @@ class MyHomePage extends StatefulWidget {
   final MetricsLogger metricsLogger;
   final Logger normalLogger;
   const MyHomePage({
-    Key? key,
+    super.key,
     required this.title,
     required this.metricsLogger,
     required this.normalLogger,
-  }) : super(key: key);
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          // DebugWidgetをStackの一番最後（最前面）に配置
+          // Place DebugWidget at the very front of the Stack
           FloatingMetricsButton(
             loggers: [widget.normalLogger, widget.metricsLogger.logger],
             tabNames: ['Normal', 'Metrics'],

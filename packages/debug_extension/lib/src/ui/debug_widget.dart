@@ -91,7 +91,7 @@ class _DebugWidgetState extends State<DebugWidget>
                         if (controller.hasClients) {
                           controller.animateTo(
                             controller.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 100),
+                            duration: const Duration(milliseconds: 100),
                             curve: Curves.easeOut,
                           );
                         }

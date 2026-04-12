@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/revere_debug_extension.dart';
 import 'package:revere_debug_extension/metrics.dart';
 
-class MockMetricsPlugin extends MetricsPluginInterface {
+class MockMetricsPlugin extends MetricsPluginPlatform {
   int callCount = 0;
   @override
   Future<MetricsData?> collect() async {
@@ -17,7 +17,7 @@ class MockMetricsPlugin extends MetricsPluginInterface {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  MetricsPluginInterface.instance = MockMetricsPlugin();
+  MetricsPluginPlatform.instance = MockMetricsPlugin();
 
   group('MetricsData', () {
     test('can be constructed and fields are correct', () {
