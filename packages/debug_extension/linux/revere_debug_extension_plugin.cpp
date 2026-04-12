@@ -58,7 +58,7 @@ static void revere_debug_extension_plugin_class_init(RevereDebugExtensionPluginC
 
 static void revere_debug_extension_plugin_init(RevereDebugExtensionPlugin* self) {}
 
-void revere_debug_extension_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
+extern "C" void revere_debug_extension_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
   RevereDebugExtensionPlugin* plugin = REVERE_DEBUG_EXTENSION_PLUGIN(
     g_object_new(revere_debug_extension_plugin_get_type(), nullptr));
 

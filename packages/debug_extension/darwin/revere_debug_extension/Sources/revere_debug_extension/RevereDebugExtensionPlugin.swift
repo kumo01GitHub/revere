@@ -8,7 +8,7 @@ import FlutterMacOS
 
 public class RevereDebugExtensionPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "revere_debug_extension", binaryMessenger: registrar.messenger)
+    let channel = FlutterMethodChannel(name: "revere_debug_extension", binaryMessenger: registrar.messenger())
     let instance = RevereDebugExtensionPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
