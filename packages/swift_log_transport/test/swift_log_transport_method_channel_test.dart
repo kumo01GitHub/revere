@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swift_log_transport/swift_log_transport_method_channel.dart';
+import 'package:swift_log_transport/swift_log_transport.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
