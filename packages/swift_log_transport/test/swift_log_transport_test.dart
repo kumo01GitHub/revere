@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere/core.dart';
 import 'package:swift_log_transport/swift_log_transport.dart';
-import 'package:swift_log_transport/swift_log_transport_platform_interface.dart';
 
 /// Fake platform that records all calls without invoking a method channel.
 class _FakePlatform extends SwiftLogTransportPlatform {

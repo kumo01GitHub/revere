@@ -1,3 +1,7 @@
+## 2.0.1
+
+* fix: integrate entry points.
+
 ## 2.0.0
 
 * chore: update revere dependency to ^2.0.0.
