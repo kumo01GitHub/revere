@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:revere/core.dart';
 import '../transport/state_transport.dart';
 
-/// DebugWidget: 複数Loggerの履歴をタブで切り替え表示
+/// DebugWidget: Switch and display the history of multiple Loggers in tabs.
 class DebugWidget extends StatefulWidget {
   final List<Logger> loggers;
   final int maxLength;
@@ -31,8 +31,18 @@ class _DebugWidgetState extends State<DebugWidget>
   void initState() {
     super.initState();
     _transports = widget.loggers.map((logger) {
-      final t = StateTransport<dynamic>(maxLength: widget.maxLength);
+      final t = StateTransport<dynamic>();
       logger.addTransport(t);
+      // Add a listener to remove old elements when exceeding maxLength
+      t.state.addListener(() {
+        final maxLength = widget.maxLength;
+        final list = t.state.value;
+        if (maxLength > 0 && list.length > maxLength) {
+          // Remove excess elements from the beginning
+          t.state.value =
+              List<dynamic>.from(list.skip(list.length - maxLength));
+        }
+      });
       return t;
     }).toList();
     _tabController = TabController(length: widget.loggers.length, vsync: this);
@@ -76,7 +86,7 @@ class _DebugWidgetState extends State<DebugWidget>
                             controller.position.maxScrollExtent - 50)
                         : true;
                     if (state.length > prevLength && atBottom) {
-                      // レイアウト確定後にスクロール
+                      // Scroll after layout is completed
                       Future.delayed(Duration.zero, () {
                         if (controller.hasClients) {
                           controller.animateTo(

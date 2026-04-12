@@ -22,7 +22,7 @@ static void revere_debug_extension_plugin_handle_method_call(
 
   const gchar* method = fl_method_call_get_name(method_call);
 
-  if (strcmp(method, "getMetrics") == 0) {
+  if (strcmp(method, "collect") == 0) {
     // Linux: Use sysinfo for memory, /proc/stat for CPU
     // Linux: /proc/self/statm for process memory (RSS)
     long memory = 0;

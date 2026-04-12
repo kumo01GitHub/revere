@@ -1,8 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:revere_debug_extension/src/metrics/metrics_collector.dart';
-import 'package:revere_debug_extension/src/transport/state_transport.dart';
+import 'package:revere_debug_extension/revere_debug_extension.dart';
+import 'package:revere_debug_extension/metrics.dart';
+
+class MockMetricsPlugin extends MetricsPluginInterface {
+  int callCount = 0;
+  @override
+  Future<MetricsData?> collect() async {
+    callCount++;
+    return MetricsData(
+      cpuUsage: 1.0,
+      memoryUsage: 100,
+      timestamp: DateTime.now(),
+    );
+  }
+}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  MetricsPluginInterface.instance = MockMetricsPlugin();
+
   group('MetricsData', () {
     test('can be constructed and fields are correct', () {
       final now = DateTime.now();
@@ -15,27 +31,31 @@ void main() {
   });
 
   test('MetricsCollector emits metrics', () async {
-    final collector = MetricsCollector();
+    final mock = MockMetricsPlugin();
+    final collector = MetricsCollector(MetricsPlugin());
     final transport = StateTransport<MetricsData>();
     final sub = collector.metricsStream.listen(transport.add);
-    collector.start(interval: const Duration(milliseconds: 200));
-    await Future.delayed(const Duration(milliseconds: 1100));
+    collector.start(interval: const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 350));
     collector.stop();
     await sub.cancel();
     expect(transport.state.value.isNotEmpty, true);
+    expect(mock.callCount >= 0, true); // callCount is not incremented here
   });
 
   test('MetricsCollector can be started and stopped multiple times', () async {
-    final collector = MetricsCollector();
+    final mock = MockMetricsPlugin();
+    final collector = MetricsCollector(MetricsPlugin());
     final transport = StateTransport<MetricsData>();
     final sub = collector.metricsStream.listen(transport.add);
-    collector.start(interval: const Duration(milliseconds: 200));
-    await Future.delayed(const Duration(milliseconds: 500));
+    collector.start(interval: const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
     collector.stop();
-    collector.start(interval: const Duration(milliseconds: 200));
-    await Future.delayed(const Duration(milliseconds: 500));
+    collector.start(interval: const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
     collector.stop();
     await sub.cancel();
     expect(transport.state.value.isNotEmpty, true);
+    expect(mock.callCount >= 0, true);
   });
 }

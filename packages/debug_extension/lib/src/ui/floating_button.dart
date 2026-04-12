@@ -44,8 +44,12 @@ class _FloatingMetricsButtonState extends State<FloatingMetricsButton> {
           right: 16,
           bottom: 16,
           child: FloatingActionButton(
-            onPressed: () => setState(() => _showDebug = !_showDebug),
-            child: Icon(_showDebug ? Icons.close : Icons.bug_report),
+            onPressed: () {
+              setState(() {
+                _showDebug = !_showDebug;
+              });
+            },
+            child: const Icon(Icons.bug_report),
           ),
         ),
       ],

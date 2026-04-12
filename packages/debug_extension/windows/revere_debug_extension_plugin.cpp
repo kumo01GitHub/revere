@@ -43,7 +43,7 @@ RevereDebugExtensionPlugin::~RevereDebugExtensionPlugin() {}
 void RevereDebugExtensionPlugin::HandleMethodCall(
     const flutter::MethodCall<std::string> &method_call,
     std::unique_ptr<flutter::MethodResult<std::variant<std::monostate, int, double, std::string, std::vector<uint8_t>, std::map<std::string, std::variant<std::monostate, int, double, std::string, std::vector<uint8_t>>>>>> result) {
-  if (method_call.method_name().compare("getMetrics") == 0) {
+  if (method_call.method_name().compare("collect") == 0) {
     // Windows: Use GetProcessMemoryInfo for memory, GetSystemTimes for CPU
     // Windows: GetProcessMemoryInfo for process memory (RSS)
     int memory = 0;

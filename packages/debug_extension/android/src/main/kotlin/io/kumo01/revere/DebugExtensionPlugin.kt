@@ -16,7 +16,7 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
-    if (call.method == "getMetrics") {
+    if (call.method == "collect") {
       // Android: Use Debug.MemoryInfo for memory usage, no direct API for CPU usage
       try {
         val memoryUsage = getMemoryUsageByDebug()

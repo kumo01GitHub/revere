@@ -14,7 +14,7 @@ public class RevereDebugExtensionPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    if call.method == "getMetrics" {
+    if call.method == "collect" {
       let cpu = Self.getCPUUsage()
       let memory = Self.getMemoryUsage()
       result(["cpu": cpu, "memory": memory])

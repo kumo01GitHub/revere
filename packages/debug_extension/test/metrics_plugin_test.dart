@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/metrics.dart';
-import 'package:revere_debug_extension/revere_debug_extension.dart';
 
 class MockMetricsPlugin extends MetricsPluginInterface {
   @override
@@ -13,13 +12,10 @@ class MockMetricsPlugin extends MetricsPluginInterface {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   MetricsPluginInterface.instance = MockMetricsPlugin();
-  group('MetricsLogger', () {
-    test('can be constructed and started/stopped', () async {
-      final logger = MetricsLogger();
-      logger.start(interval: const Duration(milliseconds: 50));
-      await Future.delayed(const Duration(milliseconds: 150));
-      logger.stop();
-      expect(logger, isA<MetricsLogger>());
-    });
+  test('MetricsPlugin returns default value if null', () async {
+    final plugin = MetricsPlugin();
+    final result = await plugin.collect();
+    expect(result, isNotNull);
+    expect(result.memoryUsage, isA<int>());
   });
 }

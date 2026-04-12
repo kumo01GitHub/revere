@@ -1,74 +1,22 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'metrics_core.dart';
+import 'metrics_plugin.dart';
 
-class AndroidMetricsCollector implements PlatformMetricsCollector {
-  static const MethodChannel _channel = MethodChannel('revere_debug_extension');
-  @override
-  Future<MetricsData> collect() async {
-    try {
-      final result = await _channel.invokeMethod<Map>('getMetrics');
-      return MetricsData(
-        cpuUsage: (result?['cpu'] as num?)?.toDouble(),
-        memoryUsage: (result?['memory'] as int?) ?? 0,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return MetricsData(
-          cpuUsage: null, memoryUsage: 0, timestamp: DateTime.now());
-    }
-  }
-}
-
-class MetricsData {
-  final double? cpuUsage;
-  final int memoryUsage;
-  final DateTime timestamp;
-
-  MetricsData({
-    required this.cpuUsage,
-    required this.memoryUsage,
-    required this.timestamp,
-  });
-
-  @override
-  String toString() {
-    return 'CPU: '
-        '${cpuUsage != null ? '${cpuUsage!.toStringAsFixed(2)}%' : 'N/A'}, '
-        'Memory: $memoryUsage bytes, Time: $timestamp';
-  }
-}
-
-abstract class PlatformMetricsCollector {
-  Future<MetricsData> collect();
-}
-
+/// Collects metrics periodically and exposes them as a stream.
 class MetricsCollector {
+  final MetricsPlugin _platformCollector;
   final _controller = StreamController<MetricsData>.broadcast();
   Timer? _timer;
-  late final PlatformMetricsCollector _platformCollector;
 
-  MetricsCollector() {
-    if (kIsWeb) {
-      throw UnsupportedError('Web is not supported');
-    } else if (Platform.isAndroid) {
-      _platformCollector = AndroidMetricsCollector();
-    } else if (Platform.isIOS) {
-      _platformCollector = IOSMetricsCollector();
-    } else if (Platform.isMacOS) {
-      _platformCollector = MacOSMetricsCollector();
-    } else if (Platform.isLinux) {
-      _platformCollector = LinuxMetricsCollector();
-    } else if (Platform.isWindows) {
-      _platformCollector = WindowsMetricsCollector();
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
+  /// Creates a [MetricsCollector] using the given [MetricsPlugin].
+  MetricsCollector(this._platformCollector);
 
+  /// Returns a broadcast stream of collected [MetricsData].
   Stream<MetricsData> get metricsStream => _controller.stream;
 
+  /// Starts periodic metrics collection.
+  ///
+  /// [interval]: The interval between metric collections (default: 2 seconds).
   void start({Duration interval = const Duration(seconds: 2)}) {
     _timer?.cancel();
     _timer = Timer.periodic(interval, (_) async {
@@ -77,79 +25,8 @@ class MetricsCollector {
     });
   }
 
+  /// Stops periodic metrics collection.
   void stop() {
     _timer?.cancel();
-  }
-}
-
-class IOSMetricsCollector implements PlatformMetricsCollector {
-  static const MethodChannel _channel = MethodChannel('revere_debug_extension');
-  @override
-  Future<MetricsData> collect() async {
-    try {
-      final result = await _channel.invokeMethod<Map>('getMetrics');
-      return MetricsData(
-        cpuUsage: (result?['cpu'] as num?)?.toDouble(),
-        memoryUsage: (result?['memory'] as int?) ?? 0,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return MetricsData(
-          cpuUsage: null, memoryUsage: 0, timestamp: DateTime.now());
-    }
-  }
-}
-
-class MacOSMetricsCollector implements PlatformMetricsCollector {
-  static const MethodChannel _channel = MethodChannel('revere_debug_extension');
-  @override
-  Future<MetricsData> collect() async {
-    try {
-      final result = await _channel.invokeMethod<Map>('getMetrics');
-      return MetricsData(
-        cpuUsage: (result?['cpu'] as num?)?.toDouble(),
-        memoryUsage: (result?['memory'] as int?) ?? 0,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return MetricsData(
-          cpuUsage: null, memoryUsage: 0, timestamp: DateTime.now());
-    }
-  }
-}
-
-class LinuxMetricsCollector implements PlatformMetricsCollector {
-  static const MethodChannel _channel = MethodChannel('revere_debug_extension');
-  @override
-  Future<MetricsData> collect() async {
-    try {
-      final result = await _channel.invokeMethod<Map>('getMetrics');
-      return MetricsData(
-        cpuUsage: (result?['cpu'] as num?)?.toDouble(),
-        memoryUsage: (result?['memory'] as int?) ?? 0,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return MetricsData(
-          cpuUsage: null, memoryUsage: 0, timestamp: DateTime.now());
-    }
-  }
-}
-
-class WindowsMetricsCollector implements PlatformMetricsCollector {
-  static const MethodChannel _channel = MethodChannel('revere_debug_extension');
-  @override
-  Future<MetricsData> collect() async {
-    try {
-      final result = await _channel.invokeMethod<Map>('getMetrics');
-      return MetricsData(
-        cpuUsage: (result?['cpu'] as num?)?.toDouble(),
-        memoryUsage: (result?['memory'] as int?) ?? 0,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return MetricsData(
-          cpuUsage: null, memoryUsage: 0, timestamp: DateTime.now());
-    }
   }
 }
