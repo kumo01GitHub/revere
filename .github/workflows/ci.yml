@@ -23,6 +23,11 @@ jobs:
     with:
       run_integration_tests: ${{ inputs.run_integration_tests == true }}
 
+  debug_extension:
+    uses: ./.github/workflows/ci-debug-extension.yml
+    with:
+      run_integration_tests: ${{ inputs.run_integration_tests == true }}
+
   file_transport:
     uses: ./.github/workflows/ci-file-transport.yml
     with:

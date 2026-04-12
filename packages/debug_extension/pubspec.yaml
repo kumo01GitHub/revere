@@ -1,0 +1,42 @@
+name: revere_debug_extension
+description: A Flutter plugin for revere to collect and display app metrics and logs in real-time.
+version: 0.2.0
+
+homepage: https://github.com/kumo01GitHub/revere
+repository: https://github.com/kumo01GitHub/revere/tree/main/packages/debug_extension
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  revere: ^2.0.0
+  collection: ^1.17.0
+  meta: ^1.9.0
+  provider: ^6.0.0
+
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.kumo01.revere
+        pluginClass: DebugExtensionPlugin
+      ios:
+        sharedDarwinSource: true
+        pluginClass: RevereDebugExtensionPlugin
+      linux:
+        pluginClass: RevereDebugExtensionPlugin
+      macos:
+        sharedDarwinSource: true
+        pluginClass: RevereDebugExtensionPlugin
+      windows:
+        pluginClass: RevereDebugExtensionPlugin

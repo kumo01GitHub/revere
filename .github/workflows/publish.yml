@@ -22,6 +22,7 @@ jobs:
           case "$TAG" in
             core-v*)                   DIR="packages/core" ;;
             flutter-extension-v*)      DIR="packages/flutter_extension" ;;
+            debug-extension-v*)        DIR="packages/debug_extension" ;;
             file-transport-v*)         DIR="packages/file_transport" ;;
             websocket-transport-v*)    DIR="packages/websocket_transport" ;;
             firebase-transport-v*)     DIR="packages/firebase_transport" ;;
