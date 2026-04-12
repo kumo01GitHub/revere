@@ -28,12 +28,13 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
     } else {
       result.notImplemented()
     }
-    // Returns memory usage in bytes (resident set size) using Debug.MemoryInfo
-    private fun getMemoryUsageByDebug(): Int {
-      val mi = android.os.Debug.MemoryInfo()
-      android.os.Debug.getMemoryInfo(mi)
-      return mi.totalPss * 1024 // totalPss is in KB
-    }
+  }
+
+  // Returns memory usage in bytes (resident set size) using Debug.MemoryInfo
+  private fun getMemoryUsageByDebug(): Int {
+    val mi = android.os.Debug.MemoryInfo()
+    android.os.Debug.getMemoryInfo(mi)
+    return mi.totalPss * 1024 // totalPss is in KB
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
