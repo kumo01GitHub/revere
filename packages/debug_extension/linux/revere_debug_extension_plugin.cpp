@@ -4,7 +4,8 @@
 #include <gtk/gtk.h>
 #include <sys/sysinfo.h>
 
-#define REVER_DEBUG_EXTENSION_PLUGIN(obj) \
+// 正しいマクロ名に修正
+#define REVERE_DEBUG_EXTENSION_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), revere_debug_extension_plugin_get_type(), \
                               RevereDebugExtensionPlugin))
 
@@ -58,15 +59,16 @@ static void revere_debug_extension_plugin_class_init(RevereDebugExtensionPluginC
 static void revere_debug_extension_plugin_init(RevereDebugExtensionPlugin* self) {}
 
 void revere_debug_extension_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
-  RevereDebugExtensionPlugin* plugin = REVER_DEBUG_EXTENSION_PLUGIN(
-      g_object_new(revere_debug_extension_plugin_get_type(), nullptr));
+  RevereDebugExtensionPlugin* plugin = REVERE_DEBUG_EXTENSION_PLUGIN(
+    g_object_new(revere_debug_extension_plugin_get_type(), nullptr));
 
   g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
   g_autoptr(FlMethodChannel) channel = fl_method_channel_new(
-      fl_plugin_registrar_get_messenger(registrar),
-      "revere_debug_extension",
-      FL_METHOD_CODEC(codec));
-  fl_method_channel_set_method_call_handler(channel, reinterpret_cast<FlMethodChannelMethodCallHandlerFunc>(revere_debug_extension_plugin_handle_method_call),
-                                            g_object_ref(plugin),
-                                            g_object_unref);
+    fl_plugin_registrar_get_messenger(registrar),
+    "revere_debug_extension",
+    FL_METHOD_CODEC(codec));
+  fl_method_channel_set_method_call_handler(channel, reinterpret_cast<FlMethodChannelMethodCallHandler>(revere_debug_extension_plugin_handle_method_call),
+                      plugin,
+                      nullptr);
+  g_object_unref(plugin);
 }

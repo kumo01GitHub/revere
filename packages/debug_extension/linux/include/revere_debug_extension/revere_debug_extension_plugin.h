@@ -12,4 +12,6 @@ G_DECLARE_FINAL_TYPE(RevereDebugExtensionPlugin, revere_debug_extension_plugin, 
 
 G_END_DECLS
 
+void revere_debug_extension_plugin_register_with_registrar(FlPluginRegistrar* registrar);
+
 #endif  // FLUTTER_PLUGIN_REVERE_DEBUG_EXTENSION_PLUGIN_H_
