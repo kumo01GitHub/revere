@@ -12,6 +12,12 @@ G_DECLARE_FINAL_TYPE(RevereDebugExtensionPlugin, revere_debug_extension_plugin, 
 
 G_END_DECLS
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void revere_debug_extension_plugin_register_with_registrar(FlPluginRegistrar* registrar);
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // FLUTTER_PLUGIN_REVERE_DEBUG_EXTENSION_PLUGIN_H_
