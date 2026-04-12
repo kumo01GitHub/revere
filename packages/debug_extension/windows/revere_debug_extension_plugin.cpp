@@ -4,6 +4,8 @@
 #include <flutter/plugin_registrar_windows.h>
 #include <windows.h>
 #include <psapi.h>
+
+#include <flutter/standard_method_codec.h>
 #include <memory>
 #include <map>
 #include <variant>

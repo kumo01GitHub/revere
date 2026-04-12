@@ -20,8 +20,8 @@ class RevereDebugExtensionPlugin : public flutter::Plugin {
  private:
   // Called when a method is called on this plugin's channel from Dart.
   void HandleMethodCall(
-      const flutter::MethodCall<std::string> &method_call,
-      std::unique_ptr<flutter::MethodResult<std::variant<std::monostate, int, double, std::string, std::vector<uint8_t>, std::map<std::string, std::variant<std::monostate, int, double, std::string, std::vector<uint8_t>>>>>> result);
+      const flutter::MethodCall<flutter::EncodableValue> &method_call,
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
 #endif  // FLUTTER_PLUGIN_REVERE_DEBUG_EXTENSION_PLUGIN_H_
