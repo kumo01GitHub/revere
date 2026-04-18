@@ -17,17 +17,45 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "collect") {
-      // Android: Use Debug.MemoryInfo for memory usage, no direct API for CPU usage
       try {
         val memoryUsage = getMemoryUsageByDebug()
-        // CPU usage: not available as instant value via Android API
-        result.success(mapOf("cpu" to null, "memory" to memoryUsage))
+        // CPU usage (simple): /proc/self/stat utime+stime diff
+        val cpuPercent = getSimpleCpuUsagePercent()
+        result.success(mapOf("cpu" to cpuPercent, "memory" to memoryUsage))
       } catch (e: Exception) {
         result.success(mapOf("cpu" to null, "memory" to 0))
       }
     } else {
       result.notImplemented()
     }
+
+  companion object {
+    private var lastCpuTime: Long = 0L
+    private var lastSampleTime: Long = 0L
+    private fun getSimpleCpuUsagePercent(): Double? {
+      try {
+        val stat = java.io.RandomAccessFile("/proc/self/stat", "r")
+        val toks = stat.readLine().split(" ")
+        val utime = toks[13].toLong()
+        val stime = toks[14].toLong()
+        val totalTime = utime + stime
+        val now = SystemClock.elapsedRealtime()
+        var percent: Double? = null
+        if (lastSampleTime != 0L && now > lastSampleTime) {
+          val diffCpu = totalTime - lastCpuTime
+          val diffTime = now - lastSampleTime
+          percent = 100.0 * (diffCpu.toDouble() / android.os.Process.getElapsedCpuTime().toDouble())
+          if (percent < 0) percent = 0.0
+        }
+        lastCpuTime = totalTime
+        lastSampleTime = now
+        stat.close()
+        return percent
+      } catch (e: Exception) {
+        return null
+      }
+    }
+  }
   }
 
   // Returns memory usage in bytes (resident set size) using Debug.MemoryInfo
