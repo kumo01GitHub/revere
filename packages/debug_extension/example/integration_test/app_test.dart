@@ -77,4 +77,40 @@ void main() {
       reason: 'Metrics tab should contain memory or cpu info',
     );
   });
+
+  testWidgets('Metrics values stabilize after repeated collection', (
+    WidgetTester tester,
+  ) async {
+    app.main();
+    await tester.pumpAndSettle();
+    // Start metrics collection
+    await tester.tap(find.text('Start Metrics Collection'));
+    await tester.pumpAndSettle();
+    // Metrics tabを開く
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Metrics'));
+    await tester.pumpAndSettle();
+    // 何度か繰り返しpumpして値が安定するのを待つ
+    for (int i = 0; i < 3; i++) {
+      await tester.pump(const Duration(seconds: 2));
+    }
+    // CPU値がN/Aでないことを確認（ListTile内テキストにN/Aが含まれない）
+    final metricsListTiles = find.descendant(
+      of: find.byType(TabBarView),
+      matching: find.byType(ListTile),
+    );
+    bool foundCpuValue = false;
+    for (final element in tester.widgetList<ListTile>(metricsListTiles)) {
+      final textWidget = element.title;
+      if (textWidget is Text) {
+        final text = textWidget.data?.toLowerCase() ?? '';
+        if (text.contains('cpu') && !text.contains('n/a')) {
+          foundCpuValue = true;
+          break;
+        }
+      }
+    }
+    expect(foundCpuValue, isTrue, reason: 'CPU値がN/Aでない行が存在すること');
+  });
 }

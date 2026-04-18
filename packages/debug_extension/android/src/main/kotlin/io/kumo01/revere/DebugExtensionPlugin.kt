@@ -14,14 +14,14 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "revere_debug_extension")
     channel.setMethodCallHandler(this)
-
+  }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "collect") {
       try {
         val memoryUsage = getMemoryUsageByDebug()
         // CPU usage (simple): /proc/self/stat utime+stime diff
-        val cpuPercent = Companion.getSimpleCpuUsagePercent()
+        val cpuPercent = getSimpleCpuUsagePercent()
         result.success(mapOf("cpu" to cpuPercent, "memory" to memoryUsage))
       } catch (e: Exception) {
         result.success(mapOf("cpu" to null, "memory" to 0))
@@ -32,8 +32,9 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   companion object {
-    private var lastCpuTime: Long = 0L
-    private var lastSampleTime: Long = 0L
+    private var lastCpuTime: Long? = null
+    private var lastSampleTime: Long? = null
+    private var lastPercent: Double? = null
     fun getSimpleCpuUsagePercent(): Double? {
       try {
         val stat = java.io.RandomAccessFile("/proc/self/stat", "r")
@@ -43,21 +44,27 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
         val totalTime = utime + stime
         val now = SystemClock.elapsedRealtime()
         var percent: Double? = null
-        if (lastSampleTime != 0L && now > lastSampleTime) {
-          val diffCpu = totalTime - lastCpuTime
-          val diffTime = now - lastSampleTime
-          percent = 100.0 * (diffCpu.toDouble() / android.os.Process.getElapsedCpuTime().toDouble())
-          if (percent < 0) percent = 0.0
+        if (lastCpuTime != null && lastSampleTime != null && now > lastSampleTime!!) {
+          val diffCpu = totalTime - lastCpuTime!!
+          val diffTime = now - lastSampleTime!!
+          if (diffTime > 0) {
+            percent = 100.0 * (diffCpu.toDouble() / android.os.Process.getElapsedCpuTime().toDouble())
+            if (percent < 0) percent = 0.0
+            lastPercent = percent
+          } else {
+            percent = lastPercent
+          }
+        } else {
+          percent = lastPercent
         }
         lastCpuTime = totalTime
         lastSampleTime = now
         stat.close()
         return percent
       } catch (e: Exception) {
-        return null
+        return lastPercent
       }
     }
-  }
   }
 
   // Returns memory usage in bytes (resident set size) using Debug.MemoryInfo
