@@ -14,7 +14,7 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "revere_debug_extension")
     channel.setMethodCallHandler(this)
-  }
+
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "collect") {
