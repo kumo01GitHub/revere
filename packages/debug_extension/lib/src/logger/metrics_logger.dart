@@ -10,7 +10,7 @@ class MetricsLogger {
   static final MetricsLogger _instance = MetricsLogger._internal();
   factory MetricsLogger() => _instance;
   MetricsLogger._internal() {
-    _collector = MetricsCollector(MetricsPlugin());
+    _collector = MetricsCollector(DebugExtensionPlugin());
   }
 
   final Logger _logger = Logger();

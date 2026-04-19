@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/metrics.dart';
 
-class MockMetricsPlugin extends MetricsPluginPlatform {
+class MockDebugExtensionPlugin extends DebugExtensionPluginPlatform {
   @override
   Future<MetricsData?> collect() async {
     return MetricsData(
@@ -11,9 +11,9 @@ class MockMetricsPlugin extends MetricsPluginPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  MetricsPluginPlatform.instance = MockMetricsPlugin();
-  test('MetricsPlugin returns default value if null', () async {
-    final plugin = MetricsPlugin();
+  DebugExtensionPluginPlatform.instance = MockDebugExtensionPlugin();
+  test('DebugExtensionPlugin returns default value if null', () async {
+    final plugin = DebugExtensionPlugin();
     final result = await plugin.collect();
     expect(result, isNotNull);
     expect(result.memoryUsage, isA<int>());

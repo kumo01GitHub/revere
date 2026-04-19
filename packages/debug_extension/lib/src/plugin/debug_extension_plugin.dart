@@ -2,7 +2,7 @@ import 'debug_extension_plugin_platform_interface.dart';
 import '../metrics/metrics_data.dart';
 
 /// Provides a unified API for collecting metrics from the current platform.
-class MetricsPlugin {
+class DebugExtensionPlugin {
   /// Collects metrics from the current platform implementation.
   ///
   /// Returns a [MetricsData] object. If the platform returns null, a default value is returned.
