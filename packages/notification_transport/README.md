@@ -75,7 +75,29 @@ logger.addTransport(NotificationTransport(plugin: plugin));
 
 ## App-side Setup
 
-N/A
+
+On iOS and macOS, you must request notification permissions yourself. This package does not automatically show the permission dialog.
+
+On Android 13 (API 33) and above, notification permission is also required. However, as of flutter_local_notifications 20.1.0, you must use a separate package such as permission_handler to request it:
+
+```dart
+import 'package:permission_handler/permission_handler.dart';
+await Permission.notification.request();
+```
+
+For iOS/macOS, use flutter_local_notifications or permission_handler to request permissions:
+
+For example, use flutter_local_notifications or permission_handler to request permissions:
+
+```dart
+final ios = plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+await ios?.requestPermissions(alert: true, badge: true, sound: true);
+
+final macos = plugin.resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>();
+await macos?.requestPermissions(alert: true, badge: true, sound: true);
+```
+
+On macOS, the system may not show the dialog automatically. In that case, instruct users to enable notifications in System Settings > Notifications.
 
 ## Additional Information
 

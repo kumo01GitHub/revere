@@ -13,6 +13,7 @@ dependencies:
     path: ../
   revere: ^2.0.0
   cupertino_icons: ^1.0.8
+  flutter_local_notifications: ^20.0.0
 
 dev_dependencies:
   integration_test:

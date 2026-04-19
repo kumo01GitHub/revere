@@ -34,7 +34,7 @@ void main() {
     // Give initialization a moment to complete.
     await tester.pump(const Duration(milliseconds: 300));
 
-    for (final level in LogLevel.values) {
+    for (final level in LogLevel.values.where((l) => l != LogLevel.silent)) {
       await transport.log(
         LogEvent(
           level: level,
