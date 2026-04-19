@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'revere_debug_extension'
-  s.version = '0.3.0'
+  s.version = '0.4.0'
   s.summary          = 'A Flutter plugin for revere to collect and display app metrics and logs in real-time.'
   s.description      = <<-DESC
     A Flutter plugin for revere to collect and display app metrics and logs in real-time.
