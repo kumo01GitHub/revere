@@ -1,5 +1,5 @@
 import '../metrics/metrics_collector.dart';
-import '../metrics/metrics_plugin.dart';
+import '../plugin/debug_extension_plugin.dart';
 import '../metrics/metrics_data.dart';
 import 'dart:async';
 import 'package:revere/core.dart';

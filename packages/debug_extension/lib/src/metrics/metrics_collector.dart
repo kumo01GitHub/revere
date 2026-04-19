@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'metrics_plugin.dart';
+import '../plugin/debug_extension_plugin.dart';
 import 'metrics_data.dart';
 
 /// Collects metrics periodically and exposes them as a stream.
