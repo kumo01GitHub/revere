@@ -4,6 +4,9 @@
 #include <gtk/gtk.h>
 #include <sys/utsname.h>
 
+#include <sys/resource.h> // for getrusage
+#include <unistd.h>       // for sysconf
+
 #include <cstring>
 
 #include "revere_debug_extension_plugin_private.h"
@@ -26,8 +29,8 @@ static void revere_debug_extension_plugin_handle_method_call(
 
   const gchar* method = fl_method_call_get_name(method_call);
 
-  if (strcmp(method, "getPlatformVersion") == 0) {
-    response = get_platform_version();
+  if (strcmp(method, "collect") == 0) {
+    response = collect();
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }
@@ -35,11 +38,30 @@ static void revere_debug_extension_plugin_handle_method_call(
   fl_method_call_respond(method_call, response, nullptr);
 }
 
-FlMethodResponse* get_platform_version() {
-  struct utsname uname_data = {};
-  uname(&uname_data);
-  g_autofree gchar *version = g_strdup_printf("Linux %s", uname_data.version);
-  g_autoptr(FlValue) result = fl_value_new_string(version);
+// Returns a map: {"cpu": double (seconds), "memory": int64 (bytes)}
+FlMethodResponse* collect() {
+  // CPU usage: user + system time (seconds)
+  double cpu_time = 0.0;
+  struct rusage usage;
+  if (getrusage(RUSAGE_SELF, &usage) == 0) {
+    cpu_time = usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1e6;
+    cpu_time += usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6;
+  }
+
+  // Memory usage: RSS (resident set size, bytes)
+  long rss = 0;
+  FILE* fp = fopen("/proc/self/statm", "r");
+  if (fp) {
+    long pages = 0;
+    if (fscanf(fp, "%*s %ld", &pages) == 1) {
+      rss = pages * sysconf(_SC_PAGESIZE);
+    }
+    fclose(fp);
+  }
+
+  g_autoptr(FlValue) result = fl_value_new_map();
+  fl_value_set(result, fl_value_new_string("cpu"), fl_value_new_float(cpu_time));
+  fl_value_set(result, fl_value_new_string("memory"), fl_value_new_int(rss));
   return FL_METHOD_RESPONSE(fl_method_success_response_new(result));
 }
 
