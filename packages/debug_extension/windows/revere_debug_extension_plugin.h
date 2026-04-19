@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace revere_debug_extension_plugin {
+namespace revere_debug_extension {
 
 class RevereDebugExtensionPlugin : public flutter::Plugin {
  public:
@@ -26,6 +26,6 @@ class RevereDebugExtensionPlugin : public flutter::Plugin {
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
-}  // namespace revere_debug_extension_plugin
+}  // namespace revere_debug_extension
 
 #endif  // FLUTTER_PLUGIN_REVERE_DEBUG_EXTENSION_PLUGIN_H_

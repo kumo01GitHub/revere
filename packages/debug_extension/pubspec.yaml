@@ -39,4 +39,4 @@ flutter:
         sharedDarwinSource: true
         pluginClass: RevereDebugExtensionPlugin
       windows:
-        pluginClass: RevereDebugExtensionPlugin
+        pluginClass: RevereDebugExtensionPluginCApi

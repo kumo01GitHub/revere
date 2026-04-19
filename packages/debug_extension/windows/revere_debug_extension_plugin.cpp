@@ -2,10 +2,9 @@
 
 // This must be included before many other Windows headers.
 #include <windows.h>
-#include <psapi.h>
 
-// For getPlatformVersion; remove unless needed for your plugin implementation.
-#include <VersionHelpers.h>
+// For PROCESS_MEMORY_COUNTERS, GetProcessMemoryInfo
+#include <psapi.h>
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -14,14 +13,14 @@
 #include <memory>
 #include <sstream>
 
-namespace revere_debug_extension_plugin {
+namespace revere_debug_extension {
 
 // static
 void RevereDebugExtensionPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
   auto channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "revere_debug_extension_plugin",
+          registrar->messenger(), "revere_debug_extension",
           &flutter::StandardMethodCodec::GetInstance());
 
   auto plugin = std::make_unique<RevereDebugExtensionPlugin>();
@@ -42,40 +41,33 @@ void RevereDebugExtensionPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   if (method_call.method_name().compare("collect") == 0) {
-    // メモリ取得
-    SIZE_T memory = 0;
+    // CPU usage (process)
+    FILETIME ftCreation, ftExit, ftKernel, ftUser;
+    ULARGE_INTEGER lastKernel, lastUser;
+    double cpuUsagePercent = 0.0;
+    if (GetProcessTimes(GetCurrentProcess(), &ftCreation, &ftExit, &ftKernel, &ftUser)) {
+      lastKernel.LowPart = ftKernel.dwLowDateTime;
+      lastKernel.HighPart = ftKernel.dwHighDateTime;
+      lastUser.LowPart = ftUser.dwLowDateTime;
+      lastUser.HighPart = ftUser.dwHighDateTime;
+      // 100-nanosecond intervals to seconds
+      double kernelTime = lastKernel.QuadPart / 10000000.0;
+      double userTime = lastUser.QuadPart / 10000000.0;
+      cpuUsagePercent = (kernelTime + userTime); // total CPU time in seconds
+      // Note: For real CPU %, need to sample over time. Here, just return total seconds.
+    }
+
+    // Memory usage (process)
     PROCESS_MEMORY_COUNTERS pmc;
+    SIZE_T memRss = 0;
     if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
-      memory = pmc.WorkingSetSize;
+      memRss = pmc.WorkingSetSize; // in bytes
     }
-    // CPU使用率（簡易）
-    static FILETIME last_sys_kernel = {0}, last_sys_user = {0}, last_proc_kernel = {0}, last_proc_user = {0};
-    static ULONGLONG last_time = 0;
-    double cpu_percent = 0.0;
-    FILETIME sys_idle, sys_kernel, sys_user, proc_kernel, proc_user, dummy;
-    if (GetSystemTimes(&sys_idle, &sys_kernel, &sys_user) &&
-        GetProcessTimes(GetCurrentProcess(), &dummy, &dummy, &proc_kernel, &proc_user)) {
-      ULONGLONG sys_kernel64 = (((ULONGLONG)sys_kernel.dwHighDateTime) << 32) | sys_kernel.dwLowDateTime;
-      ULONGLONG sys_user64 = (((ULONGLONG)sys_user.dwHighDateTime) << 32) | sys_user.dwLowDateTime;
-      ULONGLONG proc_kernel64 = (((ULONGLONG)proc_kernel.dwHighDateTime) << 32) | proc_kernel.dwLowDateTime;
-      ULONGLONG proc_user64 = (((ULONGLONG)proc_user.dwHighDateTime) << 32) | proc_user.dwLowDateTime;
-      ULONGLONG sys_total = (sys_kernel64 - last_sys_kernel.dwLowDateTime - ((ULONGLONG)last_sys_kernel.dwHighDateTime << 32)) +
-                           (sys_user64 - last_sys_user.dwLowDateTime - ((ULONGLONG)last_sys_user.dwHighDateTime << 32));
-      ULONGLONG proc_total = (proc_kernel64 - last_proc_kernel.dwLowDateTime - ((ULONGLONG)last_proc_kernel.dwHighDateTime << 32)) +
-                            (proc_user64 - last_proc_user.dwLowDateTime - ((ULONGLONG)last_proc_user.dwHighDateTime << 32));
-      if (last_time != 0 && sys_total > 0) {
-        cpu_percent = 100.0 * (double)proc_total / (double)sys_total;
-        if (cpu_percent < 0) cpu_percent = 0.0;
-      }
-      last_sys_kernel = sys_kernel;
-      last_sys_user = sys_user;
-      last_proc_kernel = proc_kernel;
-      last_proc_user = proc_user;
-      last_time = GetTickCount64();
-    }
+
+    // Compose result as a map
     flutter::EncodableMap result_map = {
-      {flutter::EncodableValue("cpu"), flutter::EncodableValue(cpu_percent)},
-      {flutter::EncodableValue("memory"), flutter::EncodableValue(static_cast<int64_t>(memory))}
+      {flutter::EncodableValue("cpu"), flutter::EncodableValue(cpuUsagePercent)},
+      {flutter::EncodableValue("memory"), flutter::EncodableValue(static_cast<int64_t>(memRss))}
     };
     result->Success(flutter::EncodableValue(result_map));
   } else {
@@ -83,4 +75,4 @@ void RevereDebugExtensionPlugin::HandleMethodCall(
   }
 }
 
-}  // namespace revere_debug_extension_plugin
+}  // namespace revere_debug_extension

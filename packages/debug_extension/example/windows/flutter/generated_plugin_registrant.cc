@@ -6,9 +6,9 @@
 
 #include "generated_plugin_registrant.h"
 
-#include <revere_debug_extension/revere_debug_extension_plugin.h>
+#include <revere_debug_extension/revere_debug_extension_plugin_c_api.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
-  RevereDebugExtensionPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("RevereDebugExtensionPlugin"));
+  RevereDebugExtensionPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("RevereDebugExtensionPluginCApi"));
 }

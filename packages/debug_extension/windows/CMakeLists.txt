@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "revere_debug_extension_plugin")
+set(PROJECT_NAME "revere_debug_extension")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
@@ -25,7 +25,7 @@ list(APPEND PLUGIN_SOURCES
 # Define the plugin library target. Its name must not be changed (see comment
 # on PLUGIN_NAME above).
 add_library(${PLUGIN_NAME} SHARED
-  "include/revere_debug_extension_plugin/revere_debug_extension_plugin_c_api.h"
+  "include/revere_debug_extension/revere_debug_extension_plugin_c_api.h"
   "revere_debug_extension_plugin_c_api.cpp"
   ${PLUGIN_SOURCES}
 )
@@ -44,14 +44,14 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 
 # Source include directories and library dependencies. Add any plugin-specific
 # dependencies here.
-target_include_directories(${PLUGIN_NAME} PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/revere_debug_extension_plugin")
+target_include_directories(${PLUGIN_NAME} INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(revere_debug_extension_plugin_bundled_libraries
+set(revere_debug_extension_bundled_libraries
   ""
   PARENT_SCOPE
 )
