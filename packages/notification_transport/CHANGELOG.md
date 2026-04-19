@@ -1,3 +1,7 @@
+## 2.0.1
+
+* ci: separate darwin integration tests.
+
 ## 2.0.0
 
 * chore: update revere dependency to ^2.0.0.

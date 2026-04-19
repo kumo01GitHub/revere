@@ -1,6 +1,7 @@
 ## 2.0.1
 
 * fix: integrate entry points.
+* ci: separate darwin integration tests.
 
 ## 2.0.0
 
