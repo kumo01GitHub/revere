@@ -1,5 +1,5 @@
 import '../metrics/metrics_collector.dart';
-import '../metrics/metrics_plugin.dart';
+import '../plugin/debug_extension_plugin.dart';
 import '../metrics/metrics_data.dart';
 import 'dart:async';
 import 'package:revere/core.dart';
@@ -10,7 +10,7 @@ class MetricsLogger {
   static final MetricsLogger _instance = MetricsLogger._internal();
   factory MetricsLogger() => _instance;
   MetricsLogger._internal() {
-    _collector = MetricsCollector(MetricsPlugin());
+    _collector = MetricsCollector(DebugExtensionPlugin());
   }
 
   final Logger _logger = Logger();

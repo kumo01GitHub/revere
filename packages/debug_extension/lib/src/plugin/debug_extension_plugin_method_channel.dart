@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
-import 'metrics_plugin_platform_interface.dart';
-import 'metrics_data.dart';
+import 'debug_extension_plugin_platform_interface.dart';
+import '../metrics/metrics_data.dart';
 
-/// MethodChannel-based implementation of [MetricsPluginPlatform].
-class MethodChannelMetricsPlugin extends MetricsPluginPlatform {
+/// MethodChannel-based implementation of [DebugExtensionPluginPlatform].
+class MethodChannelDebugExtensionPlugin extends DebugExtensionPluginPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('revere_debug_extension');

@@ -90,28 +90,20 @@ jobs:
           arch: ${{ matrix.arch }}
           script: cd packages/debug_extension/example && flutter test integration_test
 
-  # ── iOS / macOS integration tests ────────────────────────────────────────────
-  integration_test_darwin:
+
+  # ── iOS integration tests ───────────────────────────────────────────────────
+  integration_test_ios:
     if: inputs.run_integration_tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: macos-14
-            platform: ios
             ios-version: "17"
           - os: macos-15
-            platform: ios
             ios-version: "18"
           - os: macos-26
-            platform: ios
             ios-version: "26"
-          - os: macos-14
-            platform: macos
-          - os: macos-15
-            platform: macos
-          - os: macos-26
-            platform: macos
     defaults:
       run:
         working-directory: packages/debug_extension
@@ -132,14 +124,45 @@ jobs:
         working-directory: packages/debug_extension/example
 
       - name: Set up iOS Simulator
-        if: matrix.platform == 'ios'
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "import json,sys; devices=json.load(sys.stdin)['devices']; iphones=[d for rt,ds in devices.items() for d in ds if 'iPhone' in d['name'] and d['isAvailable'] and '${{ matrix.ios-version }}' in rt]; print(iphones[-1]['udid'])")
           xcrun simctl boot "$UDID"
           echo "DEVICE=$UDID" >> $GITHUB_ENV
 
+      - name: Integration test
+        run: flutter test integration_test -d "$DEVICE"
+        working-directory: packages/debug_extension/example
+
+  # ── macOS integration tests ─────────────────────────────────────────────────
+  integration_test_macos:
+    if: inputs.run_integration_tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-14
+          - os: macos-15
+          - os: macos-26
+    defaults:
+      run:
+        working-directory: packages/debug_extension
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Build example (dependency resolution)
+        run: flutter pub get
+        working-directory: packages/debug_extension/example
+
       - name: Set up macOS device
-        if: matrix.platform == 'macos'
         run: echo "DEVICE=macos" >> $GITHUB_ENV
 
       - name: Integration test

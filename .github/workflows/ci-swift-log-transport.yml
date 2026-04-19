@@ -38,8 +38,9 @@ jobs:
       - name: Spec test
         run: flutter test test
 
-  # ── Integration tests ─────────────────────────────────────────────────────────
-  integration_test_darwin:
+
+  # ── Integration tests (iOS) ──────────────────────────────────────────────────
+  integration_test_ios:
     if: inputs.run_integration_tests
     runs-on: ${{ matrix.os }}
     strategy:
@@ -47,51 +48,24 @@ jobs:
         include:
           # macos-14 / iOS 17
           - os: macos-14
-            platform: ios
             ios-version: "17"
             package_manager: spm
           - os: macos-14
-            platform: ios
             ios-version: "17"
-            package_manager: cocoapods
-          # macos-14 / macOS
-          - os: macos-14
-            platform: macos
-            package_manager: spm
-          - os: macos-14
-            platform: macos
             package_manager: cocoapods
           # macos-15 / iOS 18
           - os: macos-15
-            platform: ios
             ios-version: "18"
             package_manager: spm
           - os: macos-15
-            platform: ios
             ios-version: "18"
-            package_manager: cocoapods
-          # macos-15 / macOS
-          - os: macos-15
-            platform: macos
-            package_manager: spm
-          - os: macos-15
-            platform: macos
             package_manager: cocoapods
           # macos-26 / iOS 26
           - os: macos-26
-            platform: ios
             ios-version: "26"
             package_manager: spm
           - os: macos-26
-            platform: ios
             ios-version: "26"
-            package_manager: cocoapods
-          # macos-26 / macOS
-          - os: macos-26
-            platform: macos
-            package_manager: spm
-          - os: macos-26
-            platform: macos
             package_manager: cocoapods
     defaults:
       run:
@@ -121,14 +95,65 @@ jobs:
         working-directory: packages/swift_log_transport/example
 
       - name: Set up iOS Simulator
-        if: matrix.platform == 'ios'
         run: |
           UDID=$(xcrun simctl list devices available --json | python3 -c "import json,sys; devices=json.load(sys.stdin)['devices']; iphones=[d for rt,ds in devices.items() for d in ds if 'iPhone' in d['name'] and d['isAvailable'] and '${{ matrix.ios-version }}' in rt]; print(iphones[-1]['udid'])")
           xcrun simctl boot "$UDID"
           echo "DEVICE=$UDID" >> $GITHUB_ENV
 
+      - name: Integration test
+        run: flutter test integration_test -d "$DEVICE"
+        working-directory: packages/swift_log_transport/example
+
+  # ── Integration tests (macOS) ────────────────────────────────────────────────
+  integration_test_macos:
+    if: inputs.run_integration_tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # macos-14 / macOS
+          - os: macos-14
+            package_manager: spm
+          - os: macos-14
+            package_manager: cocoapods
+          # macos-15 / macOS
+          - os: macos-15
+            package_manager: spm
+          - os: macos-15
+            package_manager: cocoapods
+          # macos-26 / macOS
+          - os: macos-26
+            package_manager: spm
+          - os: macos-26
+            package_manager: cocoapods
+    defaults:
+      run:
+        working-directory: packages/swift_log_transport
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Set up Swift Package Manager
+        if: matrix.package_manager == 'spm'
+        run: flutter config --enable-swift-package-manager
+
+      - name: Set up CocoaPods
+        if: matrix.package_manager == 'cocoapods'
+        run: flutter config --no-enable-swift-package-manager
+
+      - name: Build (dependency resolution)
+        run: flutter pub get
+
+      - name: Build example (dependency resolution)
+        run: flutter pub get
+        working-directory: packages/swift_log_transport/example
+
       - name: Set up macOS device
-        if: matrix.platform == 'macos'
         run: echo "DEVICE=macos" >> $GITHUB_ENV
 
       - name: Integration test

@@ -1,3 +1,9 @@
+## 2.0.1
+
+* docs: update readme.
+* ci: fix integration tests and example.
+* ci: separate darwin integration tests.
+
 ## 2.0.0
 
 * chore: update revere dependency to ^2.0.0.

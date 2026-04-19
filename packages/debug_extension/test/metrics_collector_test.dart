@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/revere_debug_extension.dart';
 import 'package:revere_debug_extension/metrics.dart';
 
-class MockMetricsPlugin extends MetricsPluginPlatform {
+class MockDebugExtensionPlugin extends DebugExtensionPluginPlatform {
   int callCount = 0;
   @override
   Future<MetricsData?> collect() async {
@@ -17,7 +17,7 @@ class MockMetricsPlugin extends MetricsPluginPlatform {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  MetricsPluginPlatform.instance = MockMetricsPlugin();
+  DebugExtensionPluginPlatform.instance = MockDebugExtensionPlugin();
 
   group('MetricsData', () {
     test('can be constructed and fields are correct', () {
@@ -31,8 +31,8 @@ void main() {
   });
 
   test('MetricsCollector emits metrics', () async {
-    final mock = MockMetricsPlugin();
-    final collector = MetricsCollector(MetricsPlugin());
+    final mock = MockDebugExtensionPlugin();
+    final collector = MetricsCollector(DebugExtensionPlugin());
     final transport = StateTransport<MetricsData>();
     final sub = collector.metricsStream.listen(transport.add);
     collector.start(interval: const Duration(milliseconds: 100));
@@ -44,8 +44,8 @@ void main() {
   });
 
   test('MetricsCollector can be started and stopped multiple times', () async {
-    final mock = MockMetricsPlugin();
-    final collector = MetricsCollector(MetricsPlugin());
+    final mock = MockDebugExtensionPlugin();
+    final collector = MetricsCollector(DebugExtensionPlugin());
     final transport = StateTransport<MetricsData>();
     final sub = collector.metricsStream.listen(transport.add);
     collector.start(interval: const Duration(milliseconds: 100));

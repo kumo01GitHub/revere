@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'metrics_plugin.dart';
+import '../plugin/debug_extension_plugin.dart';
 import 'metrics_data.dart';
 
 /// Collects metrics periodically and exposes them as a stream.
 class MetricsCollector {
-  final MetricsPlugin _platformCollector;
+  final DebugExtensionPlugin _platformCollector;
   final _controller = StreamController<MetricsData>.broadcast();
   Timer? _timer;
 
-  /// Creates a [MetricsCollector] using the given [MetricsPlugin].
+  /// Creates a [MetricsCollector] using the given [DebugExtensionPlugin].
   MetricsCollector(this._platformCollector);
 
   /// Returns a broadcast stream of collected [MetricsData].
