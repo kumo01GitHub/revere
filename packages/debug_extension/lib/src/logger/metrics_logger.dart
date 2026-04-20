@@ -7,9 +7,7 @@ import 'package:revere/core.dart';
 class MetricsLogger {
   Logger get logger => _logger;
 
-  static final MetricsLogger _instance = MetricsLogger._internal();
-  factory MetricsLogger() => _instance;
-  MetricsLogger._internal() {
+  MetricsLogger() {
     _collector = MetricsCollector(DebugExtensionPlugin());
   }
 
