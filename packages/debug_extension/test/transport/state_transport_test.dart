@@ -2,9 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:revere_debug_extension/src/transport/state_transport.dart';
 import 'package:revere/core.dart';
 
-import 'package:revere/core.dart';
-import 'package:revere/core.dart' show LogLevel;
-
 class DummyLogEvent extends LogEvent {
   DummyLogEvent(dynamic message)
       : super(level: LogLevel.info, message: message);
