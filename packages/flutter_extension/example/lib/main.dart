@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                // 故意にエラーを投げる
+                // Intentionally throw an error
                 throw Exception('This is a test error from HomeScreen!');
               },
               child: const Text('Throw Error'),
