@@ -23,8 +23,8 @@ class MetricsLogger {
   /// Public stream getter for metrics
   Stream<MetricsData> get metricsStream => _collector!.metricsStream;
 
-  /// interval: ログ出力間隔
-  /// formatter: メッセージフォーマット (デフォルトは metrics.toString())
+  /// interval: log output interval
+  /// formatter: message format (default is metrics.toString())
   void start({
     Duration interval = const Duration(seconds: 2),
     String Function(MetricsData)? formatter,

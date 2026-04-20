@@ -86,16 +86,16 @@ void main() {
     // Start metrics collection
     await tester.tap(find.text('Start Metrics Collection'));
     await tester.pumpAndSettle();
-    // Metrics tabを開く
+    // Open Metrics tab
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Metrics'));
     await tester.pumpAndSettle();
-    // 何度か繰り返しpumpして値が安定するのを待つ
+    // Wait for values to stabilize by pumping several times
     for (int i = 0; i < 3; i++) {
       await tester.pump(const Duration(seconds: 2));
     }
-    // CPU値がN/Aでないことを確認（ListTile内テキストにN/Aが含まれない）
+    // Ensure CPU value is not N/A (no ListTile text contains N/A)
     final metricsListTiles = find.descendant(
       of: find.byType(TabBarView),
       matching: find.byType(ListTile),
@@ -111,6 +111,10 @@ void main() {
         }
       }
     }
-    expect(foundCpuValue, isTrue, reason: 'CPU値がN/Aでない行が存在すること');
+    expect(
+      foundCpuValue,
+      isTrue,
+      reason: 'There is a row where CPU value is not N/A',
+    );
   });
 }

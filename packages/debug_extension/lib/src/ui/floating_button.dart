@@ -28,7 +28,7 @@ class _FloatingMetricsButtonState extends State<FloatingMetricsButton> {
           Positioned(
             right: 16,
             top: 80,
-            bottom: 80, // ボタンの上までで制約
+            bottom: 80, // Constrained to above the button
             child: SizedBox(
               width: 400,
               child: Card(

@@ -1,4 +1,4 @@
-// メトリクス表示画面の雛形
+// Template for metrics display screen
 import 'package:flutter/material.dart';
 
 class MetricsScreen extends StatelessWidget {
