@@ -19,11 +19,31 @@ public class RevereDebugExtensionPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if call.method == "collect" {
-      let cpu = Self.getCPUUsage()
-      let memory = Self.getMemoryUsage()
-      result(["cpu": cpu, "memory": memory])
+      do {
+        let cpu = try Self.safeGetCPUUsage()
+        let memory = try Self.safeGetMemoryUsage()
+        result(["cpu": cpu, "memory": memory])
+      } catch {
+        result(FlutterError(code: "NativeError", message: error.localizedDescription, details: nil))
+      }
     } else {
       result(FlutterMethodNotImplemented)
+    }
+  }
+
+  static func safeGetCPUUsage() throws -> Double {
+    do {
+      return getCPUUsage()
+    } catch {
+      throw error
+    }
+  }
+
+  static func safeGetMemoryUsage() throws -> Int {
+    do {
+      return getMemoryUsage()
+    } catch {
+      throw error
     }
   }
 

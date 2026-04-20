@@ -20,8 +20,12 @@ class MetricsCollector {
   void start({Duration interval = const Duration(seconds: 2)}) {
     _timer?.cancel();
     _timer = Timer.periodic(interval, (_) async {
-      final metrics = await _platformCollector.collect();
-      _controller.add(metrics);
+      try {
+        final metrics = await _platformCollector.collect();
+        _controller.add(metrics);
+      } catch (e, st) {
+        _controller.addError(e, st);
+      }
     });
   }
 

@@ -7,9 +7,7 @@ import 'package:revere/core.dart';
 class MetricsLogger {
   Logger get logger => _logger;
 
-  static final MetricsLogger _instance = MetricsLogger._internal();
-  factory MetricsLogger() => _instance;
-  MetricsLogger._internal() {
+  MetricsLogger() {
     _collector = MetricsCollector(DebugExtensionPlugin());
   }
 
@@ -30,10 +28,22 @@ class MetricsLogger {
     String Function(MetricsData)? formatter,
   }) {
     _collector!.start(interval: interval);
-    _subscription = _collector!.metricsStream.listen((metrics) {
-      final msg = formatter != null ? formatter(metrics) : metrics.toString();
-      _logger.info(msg);
-    });
+    _subscription = _collector!.metricsStream.listen(
+      (metrics) {
+        try {
+          final msg =
+              formatter != null ? formatter(metrics) : metrics.toString();
+          _logger.info(msg);
+        } catch (e, st) {
+          _logger.error('[MetricsLogger] Error logging metrics',
+              error: e, stackTrace: st);
+        }
+      },
+      onError: (e, st) {
+        _logger.error('[MetricsLogger] MetricsCollector error',
+            error: e, stackTrace: st);
+      },
+    );
   }
 
   void stop() {
