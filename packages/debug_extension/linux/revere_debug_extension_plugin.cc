@@ -40,24 +40,27 @@ static void revere_debug_extension_plugin_handle_method_call(
 
 // Returns a map: {"cpu": double (seconds), "memory": int64 (bytes)}
 FlMethodResponse* collect() {
-  // CPU usage: user + system time (seconds)
   double cpu_time = 0.0;
   struct rusage usage;
-  if (getrusage(RUSAGE_SELF, &usage) == 0) {
-    cpu_time = usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1e6;
-    cpu_time += usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6;
+  int rusage_ok = getrusage(RUSAGE_SELF, &usage);
+  if (rusage_ok != 0) {
+    return FL_METHOD_RESPONSE(fl_method_error_response_new("GetRusageError", "getrusage failed", nullptr));
   }
+  cpu_time = usage.ru_utime.tv_sec + usage.ru_utime.tv_usec / 1e6;
+  cpu_time += usage.ru_stime.tv_sec + usage.ru_stime.tv_usec / 1e6;
 
-  // Memory usage: RSS (resident set size, bytes)
   long rss = 0;
   FILE* fp = fopen("/proc/self/statm", "r");
-  if (fp) {
-    long pages = 0;
-    if (fscanf(fp, "%*s %ld", &pages) == 1) {
-      rss = pages * sysconf(_SC_PAGESIZE);
-    }
-    fclose(fp);
+  if (!fp) {
+    return FL_METHOD_RESPONSE(fl_method_error_response_new("StatmOpenError", "Failed to open /proc/self/statm", nullptr));
   }
+  long pages = 0;
+  if (fscanf(fp, "%*s %ld", &pages) != 1) {
+    fclose(fp);
+    return FL_METHOD_RESPONSE(fl_method_error_response_new("StatmReadError", "Failed to read statm", nullptr));
+  }
+  rss = pages * sysconf(_SC_PAGESIZE);
+  fclose(fp);
 
   g_autoptr(FlValue) result = fl_value_new_map();
   fl_value_set(result, fl_value_new_string("cpu"), fl_value_new_float(cpu_time));

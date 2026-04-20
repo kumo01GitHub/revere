@@ -45,26 +45,26 @@ void RevereDebugExtensionPlugin::HandleMethodCall(
     FILETIME ftCreation, ftExit, ftKernel, ftUser;
     ULARGE_INTEGER lastKernel, lastUser;
     double cpuUsagePercent = 0.0;
-    if (GetProcessTimes(GetCurrentProcess(), &ftCreation, &ftExit, &ftKernel, &ftUser)) {
-      lastKernel.LowPart = ftKernel.dwLowDateTime;
-      lastKernel.HighPart = ftKernel.dwHighDateTime;
-      lastUser.LowPart = ftUser.dwLowDateTime;
-      lastUser.HighPart = ftUser.dwHighDateTime;
-      // 100-nanosecond intervals to seconds
-      double kernelTime = lastKernel.QuadPart / 10000000.0;
-      double userTime = lastUser.QuadPart / 10000000.0;
-      cpuUsagePercent = (kernelTime + userTime); // total CPU time in seconds
-      // Note: For real CPU %, need to sample over time. Here, just return total seconds.
+    if (!GetProcessTimes(GetCurrentProcess(), &ftCreation, &ftExit, &ftKernel, &ftUser)) {
+      result->Error("GetProcessTimesError", "GetProcessTimes failed", nullptr);
+      return;
     }
+    lastKernel.LowPart = ftKernel.dwLowDateTime;
+    lastKernel.HighPart = ftKernel.dwHighDateTime;
+    lastUser.LowPart = ftUser.dwLowDateTime;
+    lastUser.HighPart = ftUser.dwHighDateTime;
+    double kernelTime = lastKernel.QuadPart / 10000000.0;
+    double userTime = lastUser.QuadPart / 10000000.0;
+    cpuUsagePercent = (kernelTime + userTime);
 
-    // Memory usage (process)
     PROCESS_MEMORY_COUNTERS pmc;
     SIZE_T memRss = 0;
-    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
-      memRss = pmc.WorkingSetSize; // in bytes
+    if (!GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+      result->Error("GetProcessMemoryInfoError", "GetProcessMemoryInfo failed", nullptr);
+      return;
     }
+    memRss = pmc.WorkingSetSize;
 
-    // Compose result as a map
     flutter::EncodableMap result_map = {
       {flutter::EncodableValue("cpu"), flutter::EncodableValue(cpuUsagePercent)},
       {flutter::EncodableValue("memory"), flutter::EncodableValue(static_cast<int64_t>(memRss))}

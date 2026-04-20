@@ -2,6 +2,7 @@ package io.kumo01.revere
 
 import androidx.annotation.NonNull
 import android.os.SystemClock
+import android.util.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -20,11 +21,11 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
     if (call.method == "collect") {
       try {
         val memoryUsage = getMemoryUsageByDebug()
-        // CPU usage (simple): /proc/self/stat utime+stime diff
         val cpuPercent = getSimpleCpuUsagePercent()
         result.success(mapOf("cpu" to cpuPercent, "memory" to memoryUsage))
       } catch (e: Exception) {
-        result.success(mapOf("cpu" to null, "memory" to 0))
+        Log.e(TAG, "collect failed: ${e.javaClass.name}: ${e.message}")
+        result.error(e.javaClass.name, e.message, null)
       }
     } else {
       result.notImplemented()
@@ -32,10 +33,11 @@ class DebugExtensionPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   companion object {
+    private const val TAG = "DebugExtensionPlugin"
     private var lastCpuTime: Long? = null
     private var lastSampleTime: Long? = null
     private var lastPercent: Double? = null
-    fun getSimpleCpuUsagePercent(): Double? {
+    private fun getSimpleCpuUsagePercent(): Double? {
       try {
         val stat = java.io.RandomAccessFile("/proc/self/stat", "r")
         val toks = stat.readLine().split(" ")
