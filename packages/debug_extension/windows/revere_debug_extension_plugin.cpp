@@ -3,8 +3,10 @@
 // This must be included before many other Windows headers.
 #include <windows.h>
 
+
 // For PROCESS_MEMORY_COUNTERS, GetProcessMemoryInfo
 #include <psapi.h>
+#include <tlhelp32.h> // For thread enumeration
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
