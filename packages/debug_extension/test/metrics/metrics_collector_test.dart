@@ -10,6 +10,7 @@ class MockDebugExtensionPlugin extends DebugExtensionPluginPlatform {
     return MetricsData(
       cpuUsage: 1.0,
       memoryUsage: 100,
+      threadCount: 7,
       timestamp: DateTime.now(),
     );
   }
@@ -22,10 +23,15 @@ void main() {
   group('MetricsData', () {
     test('can be constructed and fields are correct', () {
       final now = DateTime.now();
-      final data =
-          MetricsData(cpuUsage: 42.0, memoryUsage: 123456, timestamp: now);
+      final data = MetricsData(
+        cpuUsage: 42.0,
+        memoryUsage: 123456,
+        threadCount: 5,
+        timestamp: now,
+      );
       expect(data.cpuUsage, 42.0);
       expect(data.memoryUsage, 123456);
+      expect(data.threadCount, 5);
       expect(data.timestamp, now);
     });
   });
@@ -40,6 +46,9 @@ void main() {
     collector.stop();
     await sub.cancel();
     expect(transport.state.value.isNotEmpty, true);
+    // threadCountが正しく流れるか確認
+    final last = transport.state.value.last;
+    expect(last.threadCount, 7);
     expect(mock.callCount >= 0, true); // callCount is not incremented here
   });
 

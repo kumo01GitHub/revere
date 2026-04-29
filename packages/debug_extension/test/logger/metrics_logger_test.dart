@@ -100,6 +100,9 @@ class MockDebugExtensionPlugin extends DebugExtensionPluginPlatform {
   @override
   Future<MetricsData?> collect() async {
     return MetricsData(
-        cpuUsage: 42.0, memoryUsage: 123, timestamp: DateTime.now());
+        cpuUsage: 42.0,
+        memoryUsage: 123,
+        threadCount: 2,
+        timestamp: DateTime.now());
   }
 }

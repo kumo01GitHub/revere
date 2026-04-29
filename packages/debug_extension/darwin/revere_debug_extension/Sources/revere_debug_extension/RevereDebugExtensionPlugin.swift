@@ -22,13 +22,34 @@ public class RevereDebugExtensionPlugin: NSObject, FlutterPlugin {
       do {
         let cpu = try Self.safeGetCPUUsage()
         let memory = try Self.safeGetMemoryUsage()
-        result(["cpu": cpu, "memory": memory])
+        let threadCount = try Self.safeGetThreadCount()
+        result(["cpu": cpu, "memory": memory, "threads": threadCount])
       } catch {
         result(FlutterError(code: "NativeError", message: error.localizedDescription, details: nil))
       }
     } else {
       result(FlutterMethodNotImplemented)
     }
+  }
+
+  static func safeGetThreadCount() throws -> Int {
+    do {
+      return getThreadCount()
+    } catch {
+      throw error
+    }
+  }
+
+  static func getThreadCount() -> Int {
+    var threads: thread_act_array_t? = nil
+    var threadCount: mach_msg_type_number_t = 0
+    let kr = task_threads(mach_task_self_, &threads, &threadCount)
+    if kr == KERN_SUCCESS, let threads = threads {
+      // Deallocate the thread list
+      vm_deallocate(mach_task_self_, vm_address_t(bitPattern: threads), vm_size_t(threadCount) * vm_size_t(MemoryLayout<thread_t>.size))
+      return Int(threadCount)
+    }
+    return 0
   }
 
   static func safeGetCPUUsage() throws -> Double {
