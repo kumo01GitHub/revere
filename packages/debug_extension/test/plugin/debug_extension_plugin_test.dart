@@ -27,6 +27,8 @@ class MethodChannelDebugExtensionPluginTest
           (result['cpu'] is num) ? (result['cpu'] as num?)?.toDouble() : null,
       memoryUsage:
           (result['memory'] is int) ? (result['memory'] as int?) ?? 0 : 0,
+      threadCount:
+          (result['threads'] is int) ? (result['threads'] as int?) : null,
       timestamp: DateTime.now(),
     );
   }
@@ -36,7 +38,10 @@ class MockDebugExtensionPlugin extends DebugExtensionPluginPlatform {
   @override
   Future<MetricsData?> collect() async {
     return MetricsData(
-        cpuUsage: 42.0, memoryUsage: 123, timestamp: DateTime.now());
+        cpuUsage: 42.0,
+        memoryUsage: 123,
+        threadCount: 3,
+        timestamp: DateTime.now());
   }
 }
 

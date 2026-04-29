@@ -17,6 +17,8 @@ class MethodChannelDebugExtensionPlugin extends DebugExtensionPluginPlatform {
     return MetricsData(
       cpuUsage: (result['cpu'] as num?)?.toDouble(),
       memoryUsage: (result['memory'] as int?) ?? 0,
+      threadCount:
+          (result['threads'] as int?) ?? (result['threads'] as num?)?.toInt(),
       timestamp: DateTime.now(),
     );
   }

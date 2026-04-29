@@ -69,7 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         _collecting = false;
       } else {
-        widget.metricsLogger.start();
+        widget.metricsLogger.start(
+          formatter: (metrics) =>
+              'Metrics: CPU=${metrics.cpuUsage}, MEM=${metrics.memoryUsage}, THREADS=${metrics.threadCount}, TIME=${metrics.timestamp}',
+        );
         widget.normalLogger.info(
           'Metrics collection started at ${DateTime.now()}',
         );

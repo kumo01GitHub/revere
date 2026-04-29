@@ -62,9 +62,24 @@ FlMethodResponse* collect() {
   rss = pages * sysconf(_SC_PAGESIZE);
   fclose(fp);
 
+  // Thread count
+  int thread_count = 0;
+  FILE* status_fp = fopen("/proc/self/status", "r");
+  if (status_fp) {
+    char line[256];
+    while (fgets(line, sizeof(line), status_fp)) {
+      if (strncmp(line, "Threads:", 8) == 0) {
+        sscanf(line + 8, "%d", &thread_count);
+        break;
+      }
+    }
+    fclose(status_fp);
+  }
+
   g_autoptr(FlValue) result = fl_value_new_map();
   fl_value_set(result, fl_value_new_string("cpu"), fl_value_new_float(cpu_time));
   fl_value_set(result, fl_value_new_string("memory"), fl_value_new_int(rss));
+  fl_value_set(result, fl_value_new_string("threads"), fl_value_new_int(thread_count));
   return FL_METHOD_RESPONSE(fl_method_success_response_new(result));
 }
 
